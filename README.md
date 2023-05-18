@@ -1,7 +1,7 @@
 # pako
 
 Introducing Pako! 
-The Package manager which will be used in currently nonexistent mobile Linux distribution!
+The package manager which will be used in currently nonexistent mobile Linux distribution!
 
 :warning: STILL IN DEVELOPMENT. UNSTABLE :warning: 
 
