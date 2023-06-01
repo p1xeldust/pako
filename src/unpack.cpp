@@ -1,10 +1,10 @@
-/*
- * Written by Tim Kientzle, March 2009.
+/* Written by Tim Kientzle, March 2009.
  * 
  * Released into the public domain.
  * 
- * Modified by Paul Goldstein, May 2023.
+ * Modified by Paul Goldstein, May 2023. 
  */
+
 
 #include <stdio.h>
 #include <stdlib.h>

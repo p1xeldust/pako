@@ -1,6 +1,3 @@
-name:
-your_package_name
-version:
-your_package_version
-arch:
-your_package_arch
+name: your_package_name
+version: your_package_version
+arch: your_package_arch
