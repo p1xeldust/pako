@@ -37,11 +37,11 @@ make
 ## INSTALL
 - [x] Unpack to /tmp
 - [x] Insert installed package to system list
-- [x] Check Name
-- [x] Check Version
-- [x] Check Architecture
-- [x] Compare Package arch with host arch
-	 :exclamation: Important notice :exclamation: 
+- [x] Check package's name
+- [x] Check package's version
+- [x] Check package's architecture
+- [x] Compare package's arch with host's arch\
+	 :exclamation: Important notice :exclamation:\
 	 Currently only these architectures supported:
 	- [x] x86_64 (amd64)
 	- [ ] i386 (currently unsure it will be supported)
