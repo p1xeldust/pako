@@ -66,7 +66,6 @@ void install(int argc, char* argv[]) {
 			if (line == "name:") {
 				getline(infofile, line);
 				package_name = line;
-				std::cout << package_name << std::endl;
 				if(!(package_name.size() > 0)) {
 					printf("[\e[31mE\e[39m] Error occured while installing %s: Unable to detect package name", argv[i]);
 					exit(14);
@@ -75,7 +74,6 @@ void install(int argc, char* argv[]) {
 			if (line == "version:") {
 				getline(infofile, line);
 				package_version = line;
-				std::cout << package_version << std::endl;
 				if(!(package_version.size() > 0)) {
 					printf("[\e[31mE\e[39m] Error occured while installing %s: Unable to detect package version", argv[i]);
 					exit(15);
@@ -84,7 +82,6 @@ void install(int argc, char* argv[]) {
 			if (line == "arch:") {
 				getline(infofile, line);
 				package_arch = line;
-				std::cout << package_arch << std::endl;
 				if(!(package_arch.size() > 0)) {
 					printf("[\e[31mE\e[39m] Error occured while installing %s: Unable to detect package architecture", argv[i]);
 					exit(16);
