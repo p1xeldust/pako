@@ -9,7 +9,7 @@ Be extremely careful while using pako now: many functions aren't implemented yet
 
 # Installation:
 
-For this you need a c++ compiler compatible with c++17 and ```make```. 
+For this you need a c++ compiler compatible with c++17 and ```make```.  
 Debian-like distributions:
 ```
 apt install git g++ make 
@@ -40,8 +40,8 @@ make
 - [x] Check package's name
 - [x] Check package's version
 - [x] Check package's architecture
-- [x] Compare package's arch with host's arch\
-	 :exclamation: Important notice :exclamation:\
+- [x] Compare package's arch with host's arch  
+	 :exclamation: Important notice :exclamation:  
 	 Currently only these architectures supported:
 	- [x] x86_64 (amd64)
 	- [ ] i386 (currently unsure it will be supported)
