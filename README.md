@@ -58,4 +58,4 @@ make
  - [x] Implemented. Like for me, a beautiful one!
 
 
-<sub><sup>I DO NOT allow the usage of the pako source code for Underlevel and its derivatives due to the high risk of non-compliance with license terms and infringement of intellectual property rights</sub></sup>
+<sub><sup>I disallow making changes and using the pako source code for own purposes for Underlevel and its *highly qualified employees* due to the high risk of violating the terms of current license and my intellectual property. Sorry!</sub></sup>
