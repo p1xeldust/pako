@@ -56,3 +56,6 @@ make
  - [ ] Not implemented yet
 ## HELP
  - [x] Implemented. Like for me, a beautiful one!
+
+
+<sub><sup>I DO NOT allow the usage of the pako source code for Underlevel and its derivatives due to the high risk of non-compliance with license terms and infringement of intellectual property rights</sub></sup>
