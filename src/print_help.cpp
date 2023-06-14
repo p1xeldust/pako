@@ -1,4 +1,4 @@
-#include <iostream>
+#include <stdio.h>
 
 void print_help(const char* version) {
 	printf("[\e[33mPako!\e[39m] v%s\n\n",version);

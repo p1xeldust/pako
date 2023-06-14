@@ -1,4 +1,3 @@
-
 "files":
 just make "find . > ../PAKO/files" while in source folder
 it'll create files list for package manager!

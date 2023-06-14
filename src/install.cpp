@@ -1,4 +1,4 @@
-#include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <string>
 #include <sys/stat.h>
@@ -9,16 +9,26 @@
 #ifdef __x86_64__
 #define HOST_ARCH "amd64"
 #endif
-#ifdef __x86__
+
+#ifdef __i386__
 #define HOST_ARCH "i386"
 #endif
+
 #ifdef __arm__
-#define HOST_ARCH "armhf"
+
+#ifdef __ARM_ARCH_6__
+#define HOST_ARCH "armel"
 #endif
-#ifdef __arm64__
+
+#ifdef __ARM_ARCH_7__
+#define HOST_ARCH "armhf"
+#endif 
+
+#ifdef __aarch64__
 #define HOST_ARCH "aarch64"
 #endif
 
+#endif
 std::string VAR_PATH = "/var/lib/pako";
 std::string PREFIX = "/opt/";
 
