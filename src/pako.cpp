@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
 	if(!strcmp(argv[1],"-h")) {
 		printf("\n    ██████████  ███  ███    ████   ███████    ██████   \n   ███      ███ ████  ███  ███   ███     ██      █████ \n   ███     ███ ███ ███ █████     ██       ██      █████\n   █████████  ███   ███ ██████   ██        ██    ████  \n   ████      ██████████ ███  ███ ███        ██         \n    ████    ████     ███ ███  ███ ███      ███  ███    \n    ███    ███        ███ ██  ████ ████████    ██      \n");
-		printf("[\e[33mPako!\e[39m] v%s\n\n",VERSION);
+		printf("\n[\e[33mPako!\e[39m] v%s\n\n",VERSION);
 		printf("Usage: pako <command> [packages]\n\nPackage manager functions:\n\n   -i	install a pako package.\n   -r	remove installed package\n   -l	list installed packages\n   -h	get some help like this help message\n\n");
 	}
 	if(!strcmp(argv[1],"-i")) {
