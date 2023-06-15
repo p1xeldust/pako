@@ -44,9 +44,10 @@ make
 	 :exclamation: Important notice :exclamation:  
 	 Currently only these architectures supported:
 	- [x] x86_64 (amd64)
-	- [ ] i386 (currently unsure it will be supported)
-	- [ ] aarch64 (not tested yet)
-	- [x] armhf (not tested yet, but im sure it works well)
+	- [x] i386 (I'll give it a try)
+	- [x] aarch64 (Im sure it does work but im not tested yet)
+	- [x] armhf (Im sure it does work but im not tested yet)
+ 	- [x] armel (Technically works, but untested. I do not know where is to find armel device)
 - [x] Copy files from package
 - [ ] Support symlinks (not implemented yet)
 - [x] Clear /tmp after all
