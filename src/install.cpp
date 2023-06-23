@@ -1,36 +1,14 @@
-#include <stdio.h>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <sys/stat.h>
 #include <unistd.h>
 #include "unpack.cpp"
 #include <filesystem>
+#include <stdlib.h>
+#include "constants.hpp"
 
-#ifdef __x86_64__
-#define HOST_ARCH "amd64"
-#endif
-
-#ifdef __i386__
-#define HOST_ARCH "i386"
-#endif
-
-#ifdef __arm__
-
-#ifdef __ARM_ARCH_6__
-#define HOST_ARCH "armel"
-#endif
-
-#ifdef __ARM_ARCH_7__
-#define HOST_ARCH "armhf"
-#endif 
-
-#ifdef __aarch64__
-#define HOST_ARCH "aarch64"
-#endif
-
-#endif
-std::string VAR_PATH = "/var/lib/pako";
-std::string PREFIX = "/opt/";
+using namespace std;
 
 namespace fs = std::filesystem;
 
@@ -41,34 +19,40 @@ int check_architecture(std::string package_arch) {
 	return 0;
 }
 
-void install(int argc, char* argv[]) {
+int install(int argc, char* argv[]) {
+	if(geteuid() != 0) {
+		printf("[\e[31mE\e[39m] Operation requires superuser privilegies\n");
+		return 127;
+	}
 	for(int i=2; i<argc; i++) {
-		if(fs::is_directory("/tmp/pako")) {
-			fs::remove_all("/tmp/pako");
+		if(fs::is_directory(constants::TMP_PATH)) {
+			fs::remove_all(constants::TMP_PATH);
 		}
-		if(!fs::create_directory("/tmp/pako")) {
+		try {
+			fs::create_directory(constants::TMP_PATH);
+		} catch(const std::exception& e) {
 			printf("[\e[31mE\e[39m] Unable to create temporary directory.\n");
-			exit(1);
+			return(1);
 		}		
 		// Копирование пакета в tmp
 		std::ifstream package_file(argv[i]);
-		std::ofstream package_tmp("/tmp/pako/package.tmp");
+		std::ofstream package_tmp(constants::TMP_PATH + "/package.tmp");
 		package_tmp << package_file.rdbuf();
 		package_file.close();
 		
 		// Распаковочка пакета
 		printf("Unpacking %s...\n", argv[i]);
-		if(!unpack("/tmp/pako/package.tmp")) {
+		if(unpack((constants::TMP_PATH + "/package.tmp").c_str(),constants::TMP_PATH)) {
 			printf("[\e[31mE\e[39m] Error occured while unpacking %s: Bad package.\n", argv[i]);
-			exit(1);
+			return(1);
 		}
 		package_tmp.close();
-		remove("/tmp/pako/package.tmp"); // Удаление пакета из tmp
+		fs::remove(constants::TMP_PATH + "/package.tmp"); // Удаление пакета из tmp
 		
-		std::ifstream infofile("/tmp/pako/package/PAKO/info"); // Проверяем наличие info файла в пакете. Если есть - продолжаем
+		std::ifstream infofile(constants::TMP_PATH + "/package/PAKO/info"); // Проверяем наличие info файла в пакете. Если есть - продолжаем
 		if(!infofile.good()) {
 			printf("[\e[31mE\e[39m] Error occured while unpacking %s: Is not a package.\n", argv[i]);
-			exit(1);
+			return(1);
 		}
 		// Получения имени, версии и архитектуры пакета
 		std::string package_name, package_version, package_arch;
@@ -78,7 +62,7 @@ void install(int argc, char* argv[]) {
 				package_name = line;
 				if(!(package_name.size() > 0)) {
 					printf("[\e[31mE\e[39m] Error occured while installing %s: Unable to detect package name", argv[i]);
-					exit(14);
+					return 14;
 				}
 			}
 			if (line == "version:") {
@@ -86,7 +70,7 @@ void install(int argc, char* argv[]) {
 				package_version = line;
 				if(!(package_version.size() > 0)) {
 					printf("[\e[31mE\e[39m] Error occured while installing %s: Unable to detect package version", argv[i]);
-					exit(15);
+					return 15;
 				}
 			}
 			if (line == "arch:") {
@@ -94,7 +78,7 @@ void install(int argc, char* argv[]) {
 				package_arch = line;
 				if(!(package_arch.size() > 0)) {
 					printf("[\e[31mE\e[39m] Error occured while installing %s: Unable to detect package architecture", argv[i]);
-					exit(16);
+					return 16;
 				}
 			}
 		}
@@ -103,36 +87,58 @@ void install(int argc, char* argv[]) {
 		
 		// Проверка архитектуры пакета
 		if(check_architecture(package_arch)) {
-			printf("[\e[31mE\e[39m] Error occured while installing %s: Package architecture mismatch!", package_name.c_str());
-			exit(2);
+			printf("[\e[31mE\e[39m] Error occured while installing %s:%s v%s:", package_name.c_str(), package_arch.c_str(), package_version.c_str());
+			return 2;
 		}
-		
-		fs::create_directories(VAR_PATH + "/packages/" + package_name + "_" + package_version);
-		fs::copy("/tmp/pako/package/PAKO/files", VAR_PATH + "/packages/" + package_name + "_" + package_version + "/files");
-		fs::copy("/tmp/pako/package/PAKO/info", VAR_PATH + "/packages/" + package_name +  "_" + package_version + "/info");
-		
-		std::ifstream files_list(VAR_PATH + "/packages/" + package_name +  "_" + package_version + "/files");
+		try {
+			if(fs::exists(constants::VAR_PATH + "/packages/" + package_name))
+				fs::remove_all(constants::VAR_PATH + "/packages/" + package_name);
+			fs::create_directories(constants::VAR_PATH + "/packages/" + package_name);
+			fs::copy(constants::TMP_PATH + "/package/PAKO/files", constants::VAR_PATH + "/packages/" + package_name + "/files");
+			fs::copy(constants::TMP_PATH + "/package/PAKO/info", constants::VAR_PATH + "/packages/" + package_name + "/info");
+
+			if(fs::exists(constants::TMP_PATH + "/package/PAKO/install")) {
+				fs::copy(constants::TMP_PATH + "/package/PAKO/install", constants::VAR_PATH + "/packages/" + package_name + "/install");
+				if(fs::exists(constants::VAR_PATH + "/packages/" + package_name + "/install")) {
+					printf("Running intallation configuration for %s:%s v%s\n:", package_name.c_str(), package_arch.c_str(), package_version.c_str());
+					system(("sh " + constants::VAR_PATH + "/packages/" + package_name + "/install --preinstall").c_str());
+				}
+			}
+		} catch(const exception& e) {
+			printf("[\e[31mE\e[39m] Error occured while installing %s:%s v%s:", package_name.c_str(), package_arch.c_str(), package_version.c_str());
+			std::cout << e.what() << std::endl;
+			return 2;
+		}
+
+		std::ifstream files_list(constants::VAR_PATH + "/packages/" + package_name + "/files");
 		std::string filepath;
-	
+
 		while(getline(files_list, filepath)) {
-		
-			if(fs::is_directory("/tmp/pako/package/source/" + filepath)) {
-				fs::create_directory(PREFIX + filepath);
-				/* DEBUG
-				* printf("directory: %s\n", filepath.c_str());
-				*/
+
+			if(fs::is_directory(constants::TMP_PATH + "/package/source/" + filepath)) {
+				fs::create_directory(constants::PREFIX + filepath); 
 			} else {
-				std::ifstream source_file("/tmp/pako/package/source/" + filepath, std::ios::binary);
-				std::ofstream destination_file(PREFIX + filepath, std::ios::binary);
+				if(fs::exists(constants::PREFIX + filepath))
+					fs::remove(constants::PREFIX + filepath);
+				std::ifstream source_file(constants::TMP_PATH + "/package/source/" + filepath, std::ios::binary);
+				std::ofstream destination_file(constants::PREFIX + filepath, std::ios::binary);
 				destination_file << source_file.rdbuf();
-				/* DEBUG
-				* printf("file: %s\n", filepath.c_str());
-				*/
+				if (access(filepath.c_str(), X_OK) == 0)
+					fs::permissions((constants::PREFIX + filepath).c_str(), fs::perms::owner_exec | fs::perms::others_exec, fs::perm_options::add);
 				source_file.close();
 				destination_file.close();
 			}
 		}
-		files_list.close();	
+		files_list.close();
+		ofstream status_file(constants::VAR_PATH + "status",std::ios::ate);
+		status_file << infofile.rdbuf();
 		infofile.close();
+
+		if(fs::exists(constants::VAR_PATH + "/packages/" + package_name + "/install")) {
+			printf("Running intallation configuration for %s:%s v%s\n:", package_name.c_str(), package_arch.c_str(), package_version.c_str());
+			system(("sh " + constants::VAR_PATH + "/packages/" + package_name + "/install --postinstall").c_str());
+		}
+		printf("Installed %s:%s v%s\n", package_name.c_str(), package_arch.c_str(), package_version.c_str());
 	}
+	return 0;
 }
