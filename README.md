@@ -40,21 +40,25 @@ make
 - [x] Check package's name
 - [x] Check package's version
 - [x] Check package's architecture
-- [x] Compare package's arch with host's arch  
-	 :exclamation: Important notice :exclamation:  
+- [x] Compare package's arch with host's arch
+	 :exclamation: Important notice :exclamation: 
 	 Currently only these architectures supported:
 	- [x] x86_64 (amd64)
-	- [x] i386 (I'll give it a try)
-	- [x] aarch64 (Im sure it does work but im not tested yet)
-	- [x] armhf (Im sure it does work but im not tested yet)
- 	- [x] armel (Technically works, but untested. I do not know where is to find armel device)
+	- [x] i386 (currently unsure it will be supported)
+	- [x] aarch64 (not tested yet)
+	- [x] armhf (works)
 - [x] Copy files from package
-- [ ] Support symlinks (not implemented yet)
+- [x] Pre-installation and Post-installation script
+- [ ] Support symlinks (not implemented yet, use post&pre scripts to make links)
 - [x] Clear /tmp after all
 ## LIST
-- [ ] Not implemented yet
+- [x] List all packages
+- [x] List specified packages
 ## REMOVE
- - [ ] Not implemented yet
+- [x] Check if safe to remove file (not conflicting with other packages)
+- [x] Delete files and such
+- [ ] Execute Pre-Removal script
+- [ ] Execute Post-Removal script
 ## HELP
  - [x] Implemented. Like for me, a beautiful one!
 
