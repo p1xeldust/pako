@@ -1,9 +1,0 @@
-if [ "$1" = "--preinstall" ]; then
-#preinstallation function here!
-exit 1;
-fi
-
-if [ "$1" = "--postinstall" ]; then
-#postinstallation function here!
-exit 1;
-fi
