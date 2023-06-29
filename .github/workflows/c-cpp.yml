@@ -14,5 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: make
-      run: apt install libarchive -y
-      run: make -j${nproc}
+      run: apt install libarchive -y && make -j${nproc}
