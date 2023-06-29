@@ -39,8 +39,8 @@ make
 - [x] Check Name
 - [x] Check Version
 - [x] Check Architecture
-- [x] Compare Package arch with host arch
-	 :exclamation: Important notice :exclamation: 
+- [x] Compare Package arch with host arch  
+	 :exclamation: Important notice :exclamation:  
 	 Currently only these architectures supported:
 	- [x] x86_64
 	- [x] i386 (currently unsure it will be supported)
@@ -62,6 +62,6 @@ make
 
 ### Important notice for Underlevel and [quantumde](https://github.com/quantumde)
 
-I do strongly prohibit the use, share and modify source code of Pako! package manager for Underlevel and its collaborators, variations and forks. Quantude is prohibited from using, distributing and editing the source code of Pako! I don't feel sorry for him and them. The reason is the risk of licensing violation and infringement of intellectual property rights.
+I do strongly prohibit the use, share and modify source code of Pako! package manager for Underlevel and its collaborators, variations and forks. Quantumde is prohibited from using, distributing and editing the source code of Pako! The reason is the risk of licensing violation and infringement of intellectual property rights.
 
 
