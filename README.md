@@ -58,7 +58,6 @@ make
 - [x] Check if safe to remove file (not conflicting with other packages)
 - [x] Delete files and such
 - [ ] Execute Pre-Removal script
-- [ ] Execute Post-Removal script
 ## HELP
  - [x] Implemented. Like for me, a beautiful one!
 
