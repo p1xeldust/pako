@@ -8,11 +8,10 @@ The package manager which will be used in currently nonexistent mobile Linux dis
 Be extremely careful while using pako now: many functions aren't implemented yet and there're might be some bugs.
 
 # Installation:
-
-For this you need a c++ compiler compatible with c++17 and ```make```.  
+For this you need a c++ compiler compatible with c++17 and ```make```. 
 Debian-like distributions:
 ```
-apt install git g++ make 
+apt install git g++ make libarchive-dev
 ```
 Once you've installed your compiler properly, clone this repository:
 ```
@@ -34,31 +33,31 @@ make
 
 # Functions:
 
-## INSTALL
+### [*] INSTALL
 - [x] Unpack to /tmp
 - [x] Insert installed package to system list
-- [x] Check package's name
-- [x] Check package's version
-- [x] Check package's architecture
-- [x] Compare package's arch with host's arch
+- [x] Check Name
+- [x] Check Version
+- [x] Check Architecture
+- [x] Compare Package arch with host arch
 	 :exclamation: Important notice :exclamation: 
 	 Currently only these architectures supported:
-	- [x] x86_64 (amd64)
+	- [x] x86_64
 	- [x] i386 (currently unsure it will be supported)
-	- [x] aarch64 (not tested yet)
-	- [x] armhf (works)
+	- [ ] aarch64 (not tested yet)
+	- [x] armhf
 - [x] Copy files from package
 - [x] Pre-installation and Post-installation script
-- [ ] Support symlinks (not implemented yet, use post&pre scripts to make links)
+- [X] Support symlinks (FINALLY)
 - [x] Clear /tmp after all
-## LIST
+### [*] LIST
 - [x] List all packages
 - [x] List specified packages
-## REMOVE
+### [*] REMOVE
 - [x] Check if safe to remove file (not conflicting with other packages)
 - [x] Delete files and such
 - [ ] Execute Pre-Removal script
-## HELP
+### [*] HELP
  - [x] Implemented. Like for me, a beautiful one!
 
 ### Important notice for Underlevel and [quantumde](https://github.com/quantumde)
