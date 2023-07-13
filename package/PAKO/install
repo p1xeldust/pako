@@ -1,9 +1,9 @@
 if [ "$1" = "--preinstall" ]; then
-#preinstallation function here!
+#Put your pre-installation script here!
 exit 1;
 fi
 
 if [ "$1" = "--postinstall" ]; then
-#postinstallation function here!
+#Put your post-installation script here!
 exit 1;
 fi

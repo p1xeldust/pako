@@ -1,26 +1,32 @@
+#include <string>
+#include <filesystem>
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <vector>
-#include <filesystem>
+#include <unistd.h>
 
-#include "constants.h"
-
+#include "vars.h"
 using namespace std;
 
-void check_remove(const std::string& cur_package_name) {
+namespace fs = std::filesystem;
+
+bool check_exist(std::string package_name) {
+	std::ifstream package_folder(package_name + "/info");
+	if(package_folder.good())
+		return 0;
+	return 1;
+}
+void remove_unique(const std::string& cur_package_name) {
 	std::ifstream cur_pkgfile(cur_package_name + "/files");
 	std::string cur_pkgline;
 
 	while (std::getline(cur_pkgfile, cur_pkgline)) {
 		bool mismatchFound = false;
-
 		for (const auto& entry : std::filesystem::directory_iterator(constants::VAR_PATH+"/packages/")) {
 			if (entry.is_directory()) {
-				std::string oth_pkgname = entry.path().string();
+				std::string cmp_package = entry.path().string();
 
-				if (oth_pkgname != oth_pkgname) {
-					std::ifstream oth_pkgfile(oth_pkgname + "/files");
+				if (cmp_package != cmp_package) {
+					std::ifstream oth_pkgfile(cmp_package + "/files");
 					std::string oth_pkgline;
 
 					while (std::getline(oth_pkgfile, oth_pkgline)) {
@@ -43,32 +49,28 @@ void check_remove(const std::string& cur_package_name) {
 		}
 	}
 }
-
-int remove(int argc, char* argv[]) {
-
-	//	Проверка UID на root
+int remove_f(int argc, char* argv[]) {
 	if(geteuid() != 0) {
 		printf("[\e[31mE\e[39m] Operation requires superuser privilegies\n");
 		return 127;
 	}
-	
 	for(int i = 2; i<argc; i++) {
-		std::vector<std::string> folders;
-		std::string folder = constants::VAR_PATH + "/packages/" + argv[i];
-		if(!fs::is_directory(constants::VAR_PATH + "/packages/" + argv[i])) {
+		std::string package_folder = constants::VAR_PATH + "/packages/" + argv[i];
+		if(!fs::is_directory(package_folder)) {
 			printf("[E] No such package");
 			return 1;
 		}
-		ifstream files_list(constants::VAR_PATH + "/packages/" + argv[i] + "/files");
+		ifstream files_list(package_folder + "/files");
 		if(!files_list.good()) {
 			printf("[E] No files list found, something gone wrong\n");
 			return 2;
 		}
 
-		check_remove(constants::VAR_PATH + "/packages/" + argv[i]);
-		fs::remove_all(constants::VAR_PATH + "/packages/" + argv[i]);
+		remove_unique(package_folder);
+		fs::remove_all(package_folder);
 
 	}
 	return 0;
 }
+
 
