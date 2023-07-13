@@ -35,7 +35,7 @@ make
 
 # Functions:
 
-### [*] INSTALL
+## INSTALL
 - [x] Unpack to /tmp
 - [x] Insert installed package to system list
 - [x] Check Name
@@ -52,17 +52,19 @@ make
 - [x] Pre-installation and Post-installation script
 - [X] Support symlinks (FINALLY)
 - [x] Clear /tmp after all
-### [*] LIST
+- [ ] Support dependencies
+## LIST
 - [x] List all packages
 - [x] List specified packages
-### [*] REMOVE
+## REMOVE
 - [x] Check if safe to remove file (not conflicting with other packages)
 - [x] Delete files and such
 - [ ] Execute Pre-Removal script
-### [*] HELP
+- [ ] Solve dependencies
+### HELP
  - [x] Implemented. Like for me, a beautiful one!
 
-### Important notice for Underlevel and [quantumde](https://github.com/quantumde)
+### Important notice for Underlevel and [quantumde1](https://github.com/quantumde1)
 
 I do strongly prohibit the use, share and modify source code of Pako! package manager for Underlevel and its collaborators, variations and forks. Quantumde is prohibited from using, distributing and editing the source code of Pako! The reason is the risk of licensing violation and infringement of intellectual property rights.
 
