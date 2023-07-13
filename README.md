@@ -33,7 +33,7 @@ make
  make -j{nproc}
 ```
 
-# Functions:
+# Functionality:
 
 ## INSTALL
 - [x] Unpack to /tmp
@@ -46,7 +46,7 @@ make
 	 Currently only these architectures supported:
 	- [x] x86_64
 	- [x] i386 (currently unsure it will be supported)
-	- [ ] aarch64 (not tested yet)
+	- [x] aarch64
 	- [x] armhf
 - [x] Copy files from package
 - [x] Pre-installation and Post-installation script
