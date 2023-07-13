@@ -1,9 +1,7 @@
-CXX=c++
-INSTALL_DIR=/usr/bin
+CC=c++
 
 all:
-	${CXX} -std=c++17 -Wall -o pako src/main.cpp -larchive
-
+	$(CC) -std=c++17 -o pako src/main.cpp -larchive
 install:
-	${CXX} -std=c++17 -Wall -o pako src/main.cpp -larchive
-	cp pako ${INSTALL_DIR}
+	$(CC) -std=c++17 -o pako src/main.cpp -larchive
+	cp pako /usr/bin
