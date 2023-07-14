@@ -10,10 +10,10 @@ using namespace std;
 namespace fs = std::filesystem;
 
 
-int check_arch(std::string &cur_arch) {
+bool check_arch(std::string &cur_arch) {
 	if(HOST_ARCH != cur_arch)
 		return 1;
-	return 2;
+	return 0;
 }
 
 bool create_temp() {
@@ -171,10 +171,12 @@ int install_f(int argc, char* argv[]) {
 		//Стадия вычленения инфы пакета
 		get_package_info(constants::TMP_PATH + "/package/PAKO/info", package_info);
 		
-		if(!check_arch(package_info[1]) == 1) {
+		if(check_arch(package_info[1])) {
 			printf("[\e[31mE\e[39m] Package architecture mismatch.\n");
 			return 4;
 		}
+		copy_package_information(package_info);
+		
 		if(fs::exists(constants::VAR_PATH + "/packages/" + package_info[0] + "/install")) {
 		cout << "Preparing " << package_info[0] << ":" << package_info[1] << " v" << package_info[2] << endl;
 		system(("sh " + constants::VAR_PATH + "/packages/" + package_info[0] + "/install --preinstall").c_str());
