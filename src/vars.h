@@ -25,7 +25,7 @@ namespace constants {
 
 const std::string VERSION  = "0.2-dev_build";
 const std::string PREFIX   = "/opt/";
-const std::string VAR_PATH = "/opt/var/lib/pako/";
+const std::string VAR_PATH = "//var/lib/pako/";
 const std::string TMP_PATH = "/tmp/pako/";
 }
 
