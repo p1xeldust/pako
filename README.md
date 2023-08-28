@@ -48,6 +48,7 @@ Currently only these architectures supported:
 - [x] Pre-installation and Post-installation script support
 - [X]  symlinks support
 - [X] Support dependencies (somehow)
+- [ ] Check for conflict packages 
 - [X] Solve dependencies on package removal
 
 
