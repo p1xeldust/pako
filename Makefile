@@ -13,11 +13,10 @@ EASTER_EGG  = 1 # 0/1
 
 DEBUG      = ## -DDEBUG ## <- Uncomment to enable debugging
 VERSION	   = 0.9-dev_build
-CMCXXFLAGS = -std=c++17 -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DEASTER_EGG=$(EASTER_EGG) $(DEBUG)
+CMCXXFLAGS = -std=c++17 -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DEASTER_EGG=$(EASTER_EGG) -DLOGO_ENABLE=$(LOGO_ENABLE) $(DEBUG)
 CMLIBS     = -larchive -llzma
 SOURCES    = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp src/help.cpp
 OBJ        = $(SOURCES:.cpp=.o)
-TARGET     = pako
 
 all: $(OBJ)
 	@echo " LD $^ -> pako"
@@ -29,4 +28,4 @@ all: $(OBJ)
 
 clean:
 	@echo "Cleaning up..."
-	@rm -f $(OBJ) $(TARGET)
+	@rm -f $(OBJ) pako

@@ -1,12 +1,5 @@
-#include <asm-generic/errno.h>
-#include <cstddef>
-#include <cstdint>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <filesystem>
-#include <unistd.h>
-#include <vector>
+// Для простоты
+#include <bits/stdc++.h>
 
 extern bool getPackageInfo(std::string path, std::string packageInfo[3]);
 

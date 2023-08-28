@@ -26,7 +26,7 @@ make
 ```
 Either you can link Pako statically by using
 ```
-CXXFLAGS="-static" make
+CXXFLAGS="-static"
 ```
  
 You can use ``-j`` flag to specify the  amount of cores to use while compilation. Either you can use all of them:
@@ -48,7 +48,6 @@ Currently only these architectures supported:
 - [x] Pre-installation and Post-installation script support
 - [X]  symlinks support
 - [X] Support dependencies (somehow)
-- [ ] Check for conflict packages 
 - [X] Solve dependencies on package removal
 
 
