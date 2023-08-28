@@ -36,7 +36,8 @@ You can use ``-j`` flag to specify the  amount of cores to use while compilation
 
 # Functionality:
 :exclamation: Important notice :exclamation:  
-Currently only these architectures supported:  
+Currently only these architectures supported:
+
 	- [x] x86_64
 	- [x] i386
 	- [x] aarch64
