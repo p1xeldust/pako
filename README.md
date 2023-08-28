@@ -26,7 +26,7 @@ make
 ```
 Either you can link Pako statically by using
 ```
-CXXFLAGS="-static"
+CXXFLAGS="-static" make
 ```
  
 You can use ``-j`` flag to specify the  amount of cores to use while compilation. Either you can use all of them:
