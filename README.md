@@ -34,10 +34,14 @@ You can use ``-j`` flag to specify the  amount of cores to use while compilation
  make -j{nproc}
 ```
 
-# Functionality:
+# Functionality:  
+- [x] Pre-installation and Post-installation script supported via shell script
+- [X] Symlinks support
+- [X] Support dependencies and conflicts
+- [X] Solve dependencies on package removal
+  
 :exclamation: Important notice :exclamation:  
 Currently only these architectures supported:
-
 - [x] x86_64
 - [x] i386
 - [x] aarch64
@@ -47,7 +51,4 @@ Currently only these architectures supported:
 - [x] mips 
 - [x] mipsel
 
-- [x] Pre-installation and Post-installation script supported via shell script
-- [X] Symlinks support
-- [X] Support dependencies and conflicts
-- [X] Solve dependencies on package removal
+
