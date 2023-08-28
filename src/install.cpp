@@ -1,19 +1,13 @@
+
 #include <archive.h>
 #include <archive_entry.h>
-#include <cstdint>
-#include <cstring>
-#include <exception>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <algorithm>
-#include <string>
-#include <unistd.h>
-#include <stdlib.h>
+
+// Для простоты
+#include <bits/stdc++.h>
 
 // Убрать или добавить отладку getPackageInfo. Она часто сбивает с толку, но порой необходима.
 #ifdef DEBUG
-	#define DEBUG_GPI 0
+	#define DEBUG_GPI
 #endif
 
 // Обычные x86/x86_64
@@ -55,7 +49,7 @@ namespace fs = std::filesystem;
 bool mkTempDir(string path) {
 
 	#ifdef DEBUG
-		cout << "[Debug] Trying to create temp directory" << endl;
+		cout << "[Debug] Trying to create temp directory " << path << endl;
 	#endif
 
 	try {
@@ -157,7 +151,7 @@ bool getPackageInfo(string dataFilePath, string packageInfo[3]) {
 		}
 	}
 	for(int i = 0; i < 3; i++) {
-		#if DEBUG_GPI == 1
+		#ifdef DEBUG_GPI
 			cout << "[Debug:PackageInfo " << i << " ]" << packageInfo[i] << endl;
 		#endif
 
@@ -171,32 +165,44 @@ bool getPackageInfo(string dataFilePath, string packageInfo[3]) {
 
 bool checkDeps(string dataFilePath) {
 	vector<string> dependencies;
+	string packageInfo[3], word;
 	ifstream dataFile(dataFilePath, ios::in);
-	string packageInfo[3];
 	for(string line; getline(dataFile, line); dataFile.good()) {
 
-		if(line.find(':') != std::string::npos) {
-			string type = line.substr(0, line.find(':'));
-			string value = line.substr(line.find(':') + 1);
-
-			type.erase(type.find_last_not_of(" \t") + 1);
-			value.erase(0, value.find_first_not_of(" \t"));
-
-			if(type == "deps" && value.size() > 0) {
+		if(line.find("deps:") != std::string::npos) {
+			istringstream dependenciesList(line.substr(line.find(':') + 1).erase(0, line.find_first_not_of(" \t")));
+			string dependency;
+			for(string dependency; dependenciesList >> dependency;) {
+				std::cout << "'" << dependency << "'" << std::endl;
+			if(dependency.size() > 0) {
 
 				#ifdef DEBUG
 	                cout << "[Debug:checkDeps] Dependency found: '" << value << "'" << endl;
                 #endif
-				dependencies.push_back(std::move(value));
+				dependencies.push_back(std::move(dependency));
 			} else
 				continue;
+			}
 		}
 	}
 	if(dependencies.size() <= 0)
 		return true;
 	else
 		for(size_t i=0; i<dependencies.size(); ++i) {
+			
+			for(const auto& entry : fs::directory_iterator((string)VAR_PATH + "/packages/")) {
+				getPackageInfo(entry.path().string() + "/info", packageInfo);
 		
+				if(dependencies[i] == packageInfo[0]) {
+		
+					#ifdef DEBUG
+						cout << "[Debug:checkDeps] Dependency solved: '" << dependencies[i] << "'" << endl;
+					#endif
+					dependencies.erase(std::remove(dependencies.begin(), dependencies.end(), packageInfo[0]), dependencies.end());
+					break;
+				}
+			}
+
 			for(const auto& entry : fs::directory_iterator((string)TMP_PATH)) {
         	    getPackageInfo(entry.path().string() + "/package/PAKO/info", packageInfo);
 		
@@ -209,31 +215,57 @@ bool checkDeps(string dataFilePath) {
 					break;
 				}
 	        }
-			
-			for(const auto& entry : fs::directory_iterator((string)VAR_PATH + "/packages/")) {
-				getPackageInfo(entry.path().string() + "/info", packageInfo);
-		
-				if(dependencies[i] == packageInfo[0]) {
-		
-					#ifdef DEBUG
-						cout << "[Debug:checkDeps] Dependency solved: '" << dependencies[i] << "'" << endl;
-					#endif
-					break;
-					dependencies.erase(std::remove(dependencies.begin(), dependencies.end(), packageInfo[0]), dependencies.end());
-				}
-			}
 		}
 	if(dependencies.size() > 0) {
-		cout << "[i] Unable to detect dependent packages:";
+		getPackageInfo(dataFilePath, packageInfo);
+		cout << "[i] Package " << packageInfo[0] << " depends on";
 		
 		for(size_t i = 0; i < dependencies.size(); i++)
 				cout << " '" << dependencies[i] << "'";
+		cout << endl << "Install these package first.";
+		return false;
+	}
+	return true;
+}
+bool checkConflicts(string dataFilePath) {
+	vector<string> conflicts;
+	string packageInfo[3];
+	getPackageInfo(dataFilePath, packageInfo);
+	ifstream dataFile(dataFilePath, ios::in);
+	
+	for(string line; getline(dataFile, line); dataFile.good()) {
+		
+		if(line.find("conflicts:") != std::string::npos) {
+			istringstream conflictsList(line.substr(line.find(':') + 1).erase(0, line.find_first_not_of(" \t")));
+			string conflict;
+			for(string conflict; conflictsList >> conflict;) {
+				std::cout << "'" << conflict << "'" << std::endl;
+				for(const auto& entry : fs::directory_iterator((string)TMP_PATH)) {
+					getPackageInfo(entry.path().string() + "/package/PAKO/info", packageInfo);
+				
+					if(conflict == packageInfo[0])		
+						conflicts.push_back(std::move(conflict));
+				}
+
+				for(const auto& entry : fs::directory_iterator((string)VAR_PATH + "/packages/")) {
+					getPackageInfo(entry.path().string() + "/info", packageInfo);
+
+					if(conflict == packageInfo[0])
+						conflicts.push_back(std::move(conflict));
+				}
+			}
+		}
+	}
+	if(conflicts.size() > 0) {
+		getPackageInfo(dataFilePath, packageInfo);
+		cout << "[i] Package " << packageInfo[0] << " conflicts with";
+		for(size_t i=0; i<conflicts.size(); i++)
+			cout << " '" << conflicts[i] << "'";
 		cout << endl;
 		return false;
 	}
 	return true;
 }
-
 bool checkArch(string packageArch) {
 
 	#ifdef DEBUG
@@ -248,9 +280,15 @@ bool checkArch(string packageArch) {
 }
 
 uint8_t Install(int argc, char* argv[]) {
+
 	if(geteuid() != 0) {
 		cerr << "[i] Action requires superuser privileges." << endl;
 		return 127;
+	}
+
+	if(fs::exists((string)VAR_PATH)) {
+		fs::remove_all((string)TMP_PATH);
+		filesystem::create_directories((string)TMP_PATH);
 	}
 
 	// Параллельно создаём временные папки для распаковки пакетов
@@ -264,10 +302,8 @@ uint8_t Install(int argc, char* argv[]) {
 		cout << "[i] Extracting " << argv[i] << endl;
 
 		// Параллельно распаковываем пакеты в временные папки
-		if(!unpack(fs::current_path().string() + "/" + argv[i], (string)TMP_PATH + "/package" + to_string(i-2))) {
-			cout << "fail " << argv[i] << endl;
+		if(!unpack(fs::current_path().string() + "/" + argv[i], (string)TMP_PATH + "/package" + to_string(i-2)))
 			return 3;
-		}
 	}
 
 	// Получаем информацию о пакете и добавляем контрольные файлы в систему пакетов 
@@ -287,6 +323,11 @@ uint8_t Install(int argc, char* argv[]) {
 			cout << "[Error] Unable to solve dependencies" << endl;
 			return 5;
 		}
+		if(!checkConflicts(tmpDataFilePath)) {
+			cout << "[Error] Unable to solve dependencies" << endl;
+			return 5;
+		}
+		
 
 		if(!checkArch(packageInfo[1])) {
 			string ans;
@@ -295,7 +336,15 @@ uint8_t Install(int argc, char* argv[]) {
 			if(ans != "y" || ans != "yes")
 				return 6;
 		}
-
+	}
+	for(int i=2; i<argc; i++) {
+		string tmpDataFilePath = (string)TMP_PATH + "/package" + to_string(i-2) + "/package/PAKO/info";
+		vector<string> deps;
+		string packageInfo[3];
+		if(!getPackageInfo(tmpDataFilePath, packageInfo)) {
+			cerr << "[Error] Error while processing " << argv[i] << endl;
+			return 4;
+		}
 		try {
 			fs::create_directories("/var/lib/pako/packages/" + packageInfo[0]);
 			fs::copy((string)TMP_PATH + "/package" + to_string(i-2) + "/package/PAKO", (string)VAR_PATH +"/packages/" + packageInfo[0], fs::copy_options::overwrite_existing | fs::copy_options::recursive);
@@ -304,7 +353,7 @@ uint8_t Install(int argc, char* argv[]) {
 		catch(const exception& e) {
 			cerr << "[Error] Unable to extract package control files." << endl;
 			#ifdef DEBUG
-			cout << "[Debug:CopyControlFiles]" << e.what() << endl;
+				cout << "[Debug:CopyControlFiles]" << e.what() << endl;
 			#endif
 			return 7;
 		}
@@ -332,7 +381,7 @@ uint8_t Install(int argc, char* argv[]) {
 		catch(const exception& e) {
 			cerr << "[Error] Unable to extract package contents." << endl;
 			#ifdef DEBUG
-			cout << "[Debug:CopySourceFiles]" << e.what() << endl;
+				cout << "[Debug:CopySourceFiles]" << e.what() << endl;
 			#endif
 			return 7;
 		}

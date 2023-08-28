@@ -1,6 +1,5 @@
-#include <cstdint>
-#include <cstring>
-#include <filesystem>
+// Для простоты
+#include <bits/stdc++.h>
 
 #ifdef _WIN32
     #error "Windows compilation is unavailable now"

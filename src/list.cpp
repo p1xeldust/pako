@@ -1,8 +1,5 @@
-#include <cstdint>
-#include <iostream>
-#include <string>
-#include <filesystem>
-#include <variant>
+// Для простоты
+#include <bits/stdc++.h>
 
 using namespace std;
 namespace fs = std::filesystem;
