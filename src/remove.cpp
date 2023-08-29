@@ -37,7 +37,6 @@ bool solveDeps(string packageName) {
         cout << "[i] Unable to solve dependencies. Packages";
 
         for(size_t i=0; i < dependencies.size(); i++)
-            cout << " '" << dependencies[i] << "'";
         cout << " needs " << packageName << endl;
         cout << "Use --force-remove to avoid dependencies check." << endl;
         return false;
