@@ -1,0 +1,5 @@
+pako
+*.o
+compile_flags.txt
+.github/
+.vscode/
