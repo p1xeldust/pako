@@ -1,5 +1,0 @@
-name: example
-version: 1.0
-arch: amd64
-deps:
-conflicts:
