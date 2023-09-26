@@ -1,7 +1,7 @@
 # PAKO!
 
 Introducing **Pako!**  
-The package manager which will be used in currently nonexistent mobile Linux distribution!  
+The another package manager!  
 [![Makefile CI](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml/badge.svg?branch=main)](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml)  
 
 :warning: STILL IN DEVELOPMENT. DEVBUILDS :warning: 
