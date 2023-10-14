@@ -16,13 +16,19 @@ void  Help() {
     << endl;
     #endif
     cout << "[Pako!] v" << (string)VERSION << endl
-    << "Usage: pako <action> package" << endl
+    << "Usage: pako <action> package" 
     << endl
-    << "[    -i | install a pako package     ]" << endl
-    << "[    -r | remove a pako package      ]" << endl
-    << "[    -l | list installed packages    ]" << endl
-    << "[    -h | print help message         ]" << endl
-    << "[    -v | print help message         ]" << endl;
+    << endl
+    << "  -i | install a pako package" 
+    << endl
+    << "  -r | remove a pako package" 
+    << endl
+    << "  -l | list installed packages" 
+    << endl
+    << "  -h | print help message" 
+    << endl
+    << "  -v | print help message " 
+    << endl;
 }
 
 void Version() {

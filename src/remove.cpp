@@ -1,7 +1,10 @@
 // Для простоты
 #include <bits/stdc++.h>
+#include <filesystem>
+#include <unistd.h>
 
 extern bool getPackageData(std::string path, std::string packageInfo[3]);
+extern void debugmsg(std::string msg);
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -25,73 +28,70 @@ bool solveDeps(string packageName) {
 	    }
         
     }
-    
-
     if(dependencies.size() <= 0) {
-        #ifdef DEBUG
-        cout << "[Debug.SolveDeps] Solved dependencies!" << endl;
-        #endif
+        debugmsg("[Debug.SolveDeps] Solved dependencies!");
         return true;
     } else {
         cout << "[i] Unable to solve dependencies. Packages";
-
         for(size_t i=0; i < dependencies.size(); i++)
             cout << " '" << dependencies[i] << "'";
-        cout << " needs " << packageName << endl;
-        cout << "[i] Use --force-remove to avoid this check." << endl;
+        cout << " depends on " << packageName
+             << endl
+             << "[i] Use --force-remove to avoid this check."
+             << endl;
         return false;
     }
 }
 void removePackageSource(string listFilePath) {
     vector<string> files;
     ifstream listFile(listFilePath);
-    for(string line; getline(listFile, line); listFile.good())
-        files.push_back(std::move((string)PREFIX + "/" +line));
-    for(size_t i=0; i<files.size(); i++)
-        if(fs::is_regular_file(files[i]) && !fs::is_symlink(files[i]))
-            fs::remove(files[i]); // Чистим файлики, но не ссылки.
+    for(string line; getline(listFile, line); listFile.good()) {
+        files.push_back(std::move((string)PREFIX + "/" + line));
+        //debugmsg("[DEBUG] Added " + (string)PREFIX + "/" + line + " to remove list");
+    }
+    /* Удаление файлов */
     for(size_t i=0; i<files.size(); i++) {
-        if(fs::is_symlink(files[i])) {
-            // Обработка символических ссылок. Как я их ненавижу...
-            if(fs::exists(fs::read_symlink(files[i]))) // Коли файл конечный есть, мы его оставляем
-                continue;
-            if(fs::is_directory(fs::read_symlink(files[i]))) // Ну или папка
-                continue;
-            fs::remove(files[i]);   
+        if(fs::exists(files[i]) && !fs::is_symlink(files[i])) {
+            fs::remove(files[i]);
+            debugmsg("[DEBUG] Removed file " + files[i]);
+        }
+        else if(fs::exists(files[i]) && fs::is_directory(files[i])) {
+            fs::remove(files[i]);
+            debugmsg("[DEBUG] Removed symlink " + files[i]);
+        }
+        else if(fs::exists(files[i]) && fs::is_symlink(files[i])) {
+            fs::remove(files[i]);
+            debugmsg("[DEBUG] Removed symlink " + files[i]);
         }
     }
-    for(size_t i=0; i<files.size(); i++)
-        if(fs::is_directory(files[i]) && fs::is_empty(files[i]))
-            fs::remove(files[i]);
 }
-// Самая простая функция (должна быть)
 
 bool flag_force_remove = false;
-
 int8_t Remove(std::vector<std::string> arguments) {
     if(geteuid() != 0) {
-		cerr << "[i] Action requires superuser privileges." << endl;
+		cerr << "[i] Operation requires superuser privileges." << endl;
 		return 127;
 	}
 
     for(int i = 0; i < arguments.size(); i++) {
         if(arguments[i] == (string)"--force-remove") {
             flag_force_remove = true;
+            arguments.erase(std::find(arguments.begin(), arguments.end(), "--force-remove"));
             continue;
         }
-        string dataFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/info";
-        string listFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/files";
-        string packageInfo[3];
         
-        #ifdef DEBUG
-        cout << "[Debug] dataFilePath" << dataFilePath << endl;
-        cout << "[Debug] listFilePath" << listFilePath << endl;
-        #endif
-	
-        if(!getPackageData(dataFilePath, packageInfo)) {
-            cout << "Package is not installed."  << endl;
+        if(!fs::exists((string)VAR_PATH + "/packages/" + arguments[i])) {
+            cout << "Package " << arguments[i] << " is not installed" << endl;
             return 1;
         }
+
+        string dataFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/info";
+        string listFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/files";
+        
+        string packageInfo[3];
+
+        debugmsg("[Debug] dataFilePath " + dataFilePath);
+        debugmsg("[Debug] listFilePath " + listFilePath);
 
         cout << "[i] Preparing " << arguments[i] << endl;
         if(!flag_force_remove)

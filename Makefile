@@ -1,17 +1,17 @@
-# Пользовательские переменные. На здоровье.
-PREFIX      =
+# Пользовательские переменные для установки пакетов. На здоровье.
+PREFIX      = 
 VAR_PATH    =
 TMP_PATH    =
 
-LOGO_ENABLE = 1 # 0/1
-EASTER_EGG  = 0 # 0/1
+LOGO_ENABLE = 1 # 0 / 1
+EASTER_EGG  = 0 # 0 / 1
 
 CXX         = g++
 CXXFLAGS    = -Ofast -static
 LDFLAGS     = -Ofast -static
 
 
-# Да вообще не трогайте, если не знаете, что к чему
+# Не трогайте, если не знаете, что к чему
 
 # Проверка переменных, если не заданы
 ifeq ($(PREFIX),)
@@ -30,7 +30,7 @@ ifeq ($(TMP_PATH),)
 EASTER_EGG  = 0
 endif
 
-VERSION	    = 0.9-dev_build
+VERSION	    = "0.9 dev_build"
 CMCXXFLAGS  = -std=c++17 -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DEASTER_EGG=$(EASTER_EGG) -DLOGO_ENABLE=$(LOGO_ENABLE)
 CMLIBS      = -larchive -llzma
 SOURCES     = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp src/help.cpp
@@ -38,8 +38,11 @@ OBJ         = $(SOURCES:.cpp=.o)
 
 
 all: $(OBJ)
-	@echo "  LD  $^ -> pako"
+	@echo "  LD   $^ -> pako"
 	@g++ $(CXXFLAGS) -o pako $^ $(CMLIBS)
+
+debug: all
+	
 
 %.o: %.cpp
 	@echo "  CXX  $< -> $@"

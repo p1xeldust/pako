@@ -4,7 +4,7 @@
 #include <filesystem>
 
 #ifdef _WIN32
-    #error "Windows compilation is unavailable now"
+    #error "Windows is unavailable now"
 #endif
 #ifdef _android_
     #error "Android is unavailable now"
@@ -18,15 +18,19 @@ extern int8_t List(std::vector<std::string> arguments);
 // Чтобы всем удобней было. Да, больше весит и выполняется чуууууууть дольше, но полезно
 std::vector<std::string> arguments;
 
+void debugmsg(std::string msg) {
+	#ifdef DEBUG
+		std::cout << "\e[1;90m" << msg << "\e[1;0m" << std::endl;
+	#endif
+}
+
 int main(int argc, char* argv[]) {
     try {
         if(!std::filesystem::is_directory((std::string)VAR_PATH + "/packages/"))
             std::filesystem::create_directories((std::string)VAR_PATH + "/packages/");
     } catch (const std::exception& e) {
-        #ifdef DEBUG
-        std::cout << "[DEBUG:createVar] " << e.what() << std::endl;
-        #endif
-        std::cout << "Unable to create package list folder. Try running pako as superuser." << std::endl;
+        std::cout << "Unable to create packages list. Try running pako as superuser." << std::endl;
+        debugmsg("[DEBUG:createVar] " + (std::string)e.what());
     }
     for(int i=1; i<argc; i++)
         arguments.push_back(std::move(argv[i]));
