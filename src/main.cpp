@@ -20,7 +20,7 @@ std::vector<std::string> arguments;
 
 void debugmsg(std::string msg) {
 	#ifdef DEBUG
-		std::cout << "\e[1;90m" << msg << "\e[1;0m" << std::endl;
+		std::cout << "\e[1;90m" << "[DEBUG] " << msg << "\e[1;0m" << std::endl;
 	#endif
 }
 

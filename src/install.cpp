@@ -2,9 +2,10 @@
 	Установочная функция пакетного менеджера Pako!
 	Написан toastmakingmachine, 2023 год.
 
-	ОСТАВЛЯЮ ДЛЯ ВАС, ТЕХ, КТО БУДЕТ СМОТРЕТЬ И ОЦЕНИВАТЬ ЭТОТ КОД. 
-	СИСТЕМА ПАКЕТОВ ДОЛЖНА БЫТЬ УСТРОЕНА ТАК, ЧТОБЫ ОДНОГО И ТОГО 
+	ОСТАВЛЯЮ ДЛЯ ВАС, ТЕХ, КТО БУДЕТ СМОТРЕТЬ И ОЦЕНИВАТЬ ЭТОТ КОД.
+	СИСТЕМА ПАКЕТОВ ДОЛЖНА БЫТЬ УСТРОЕНА ТАК, ЧТОБЫ ОДНОГО И ТОГО
 	ЖЕ ФАЙЛА В РАЗНЫХ ПАКЕТАХ ИЛИ НЕ БЫЛО, ИЛИ БЫЛО МАКСИМАЛЬНО МАЛО.
+	ФУНКЦИЯ ЗАМЕЩЕНИЯ ЕЩЁ НЕ ГОТОВА, ПРОШУ ПРОЩЕНИЯ ЗА НЕУДОБСТВА
 */
 
 #include <archive.h>
@@ -20,53 +21,21 @@
 #include <shared_mutex>
 #include <string>
 
+#include "architectures.h"
+
 using namespace std;
 namespace fs = std::filesystem;
+
 extern void debugmsg(std::string msg);
 
-// Обычные x86/x86_64
-#ifdef __x86_64
-	#define HOSTARCH "amd64"
-#endif
-#ifdef __x86
-	#define HOSTARCH "i386"
-#endif
-
-// Любимые PowerPC
-#ifdef __powerpc__
-	#define HOSTARCH "ppc"
-#endif
-#ifdef __powerpc64__
-	#define HOSTARCH "ppc64"
-#endif
-
-// Мипс и ель
-#ifdef __mips__
-	#define HOSTARCH "mips"
-#endif
-#ifdef __mipsel__
-	#define HOSTARCH "mipsel"
-#endif
-
-// И ручки тут как тут
-#ifdef __arm__
-	#define HOSTARCH "arm"
-#endif
-#ifdef __aarch64__
-	#define HOSTARCH "arm64"
-#endif
-
 bool mkTemp(fs::path tmpPath) {
-    #ifdef DEBUG
-    cout << "[DEBUG:mkTemp] Trying to create tmp dir " << tmpPath << endl;
-    #endif
+    debugmsg("[mkTemp] Trying to create tmp dir " + tmpPath.string());
     try {
         if(fs::exists(tmpPath))
             fs::remove_all(tmpPath);
         fs::create_directories(tmpPath);
     } catch(const exception& e) {
-        debugmsg("[DEBUG:mkTemp] Unable to create tmp dir. Exception: ");
-		debugmsg(e.what());
+        debugmsg("[DEBUG:mkTemp] Unable to create tmp dir. Exception: " + (string)e.what());
         return false;
     }
     return true;
@@ -151,9 +120,11 @@ bool getPackageData(string dataFilePath, string packageData[3]) {
             packageData[2] = value;
         else if(type == "arch")
             packageData[1] = value;
+		#ifdef DEBUG_GPI
 		debugmsg("[DEBUG_GPI]" + type + " " + value );
+		#endif
 	}
-	#if DEBUG_GPI == 1
+	#ifdef DEBUG_GPI
 	for(uint8_t i = 0; i<3; i++) {
 		if(packageData[i].size() <= 0)
 			return false;
@@ -206,7 +177,7 @@ bool checkDeps(string dataFilePath) {
 			string dependency;
 			for(string dependency; dependenciesList >> dependency;)
 				if(dependency.size() > 0) {
-					debugmsg("[Debug:checkDeps] Dependency found: '" + dependency + "'");
+					debugmsg("[checkDeps] Dependency found: '" + dependency + "'");
 					dependencies.push_back(std::move(dependency));
 				}
 		}
@@ -217,7 +188,7 @@ bool checkDeps(string dataFilePath) {
 			getPackageData(entry.path().string() + "/info", packageData);
 			for(size_t i=0; i<dependencies.size(); ++i)
 				if(dependencies[i] == packageData[0]) {	
-					debugmsg("[Debug:checkDeps] Dependency solved: '" + dependencies[i] + "'");
+					debugmsg("[checkDeps] Dependency solved: '" + dependencies[i] + "'");
 					dependencies.erase(std::remove(dependencies.begin(), dependencies.end(), packageData[0]), dependencies.end());
 					continue;
 				}
@@ -346,7 +317,7 @@ int8_t Install(std::vector<std::string> arguments) {
 
 		catch(const exception& e) {
 			cerr << "[Error] Unable to extract package control files." << endl;
-			debugmsg("[Debug:CopyControlFiles] " + (string)e.what());
+			debugmsg("[CopyControlFiles]" + (string)e.what());
 			return 7;
 		}
 		cout << "[i] Processing " << packageData[0] << ":" << packageData[2] << " " << packageData[1] << endl;
@@ -364,42 +335,46 @@ int8_t Install(std::vector<std::string> arguments) {
 		}
 
 		cout << "[i] Installing " << packageInfo[0] << ":" << packageInfo[2] << " " << packageInfo[1] << endl;
+	}
+	for (size_t i = 0; i < arguments.size(); i++) {
+		string packageData[3];
+		std::string packageDatapackageData[3];
+		getPackageData((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/PAKO/info", packageData);
+		fstream filesList((std::string)VAR_PATH + "/packages/" + packageData[0] + "/files", ios::app);
+		fs::copy((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/PAKO", (std::string)VAR_PATH + "/packages/" + packageData[0], fs::copy_options::overwrite_existing);
 
-		for (size_t i = 0; i < arguments.size(); i++) {
-			std::string packageData[3];
-			getPackageData((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/PAKO/info", packageData);
-			fstream filesList((std::string)VAR_PATH + "/packages/" + packageData[0] + "/files", ios::app);
-			fs::copy((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/PAKO", (std::string)VAR_PATH + "/packages/" + packageData[0], fs::copy_options::overwrite_existing);
-
-			for (const auto& entry : fs::recursive_directory_iterator((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/source")) {
-				std::string path = entry.path().string().substr(((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/source").size());
-
-				if (fs::is_directory(entry.path()) && !fs::is_symlink(entry.path()) && !fs::exists((std::string)PREFIX + "/" + path)) {
-					debugmsg("[DEBUG] Created directory: " + (std::string)PREFIX + "/" + path);
-					fs::create_directories((std::string)PREFIX + "/" + path);
-				} else {
-					try {
-						if(!fs::exists((std::string)PREFIX + "/" + path) && !fs::is_directory((std::string)PREFIX + "/" + path)) {
-							filesList << path << "\n";
-							debugmsg("[DEBUG] Created file: " + (std::string)PREFIX + "/" + path);
-							fs::copy(entry.path(), (std::string)PREFIX + "/" + path, fs::copy_options::overwrite_existing | fs::copy_options::recursive | fs::copy_options::copy_symlinks);
-						}
-					} catch (std::filesystem::filesystem_error const& e) {
-						if (e.code().value() == 22) {
-							continue;
-						} else {
-							std::cerr << "[Error] Unable to extract package source files." << std::endl;
-							debugmsg("[DEBUG] Filesystem error message " + (string)e.what());
-							return 8;
-						}
+		for (const auto& entry : fs::recursive_directory_iterator((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/source")) {
+			std::string path = entry.path().string().substr(((std::string)TMP_PATH + "/package" + std::to_string(i) + "/package/source").size());
+			if (fs::is_directory(entry.path()) && !fs::is_symlink(entry.path()) && !fs::exists((std::string)PREFIX + "/" + path)) {
+				debugmsg("Created directory: " + (std::string)PREFIX + "/" + path);
+				fs::create_directories((std::string)PREFIX + "/" + path);
+			} else {
+				try {
+					if(!fs::exists((std::string)PREFIX + "/" + path) && !fs::is_directory((std::string)PREFIX + "/" + path)) {
+						filesList << path << "\n";
+						debugmsg("Creating file: " + (std::string)PREFIX + "/" + path);	
+						debugmsg("Created file: " + (std::string)PREFIX + "/" + path);
+						fs::copy(entry.path(), (std::string)PREFIX + "/" + path, fs::copy_options::overwrite_existing | fs::copy_options::copy_symlinks);
+					} else if(fs::is_directory((std::string)PREFIX + "/" + path)) {
+						debugmsg("Creating Directory: " + (std::string)PREFIX + "/" + path);
+						fs::create_directories((string)PREFIX + "/" + path);
+						debugmsg("Created Directory: " + (std::string)PREFIX + "/" + path);
+					}
+				} catch (std::filesystem::filesystem_error const& e) {
+					if (e.code().value() == 22) {
+						continue;
+					} else {
+						std::cerr << "[Error] Unable to extract package source files." << std::endl;
+						debugmsg("Filesystem error message " + (string)e.what());
+						return 8;
 					}
 				}
 			}
-			filesList.close();
-    	}
+		}
+		filesList.close();
 
-		if(fs::exists((string)VAR_PATH +"/packages/" + packageInfo[0] + "/install"))
-			system(("sh " + (string)VAR_PATH +"/packages/" + packageInfo[0] + "/install" + " --postinst").c_str());
+		if(fs::exists((string)VAR_PATH +"/packages/" + packageData[0] + "/install"))
+			system(("sh " + (string)VAR_PATH +"/packages/" + packageData[0] + "/install" + " --postinst").c_str());
 	}
 	#if EASTER_EGG == 1
 		std::cout << "Message from developer: Thank you!" << std::endl;

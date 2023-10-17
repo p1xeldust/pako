@@ -7,8 +7,8 @@ LOGO_ENABLE = 1 # 0 / 1
 EASTER_EGG  = 0 # 0 / 1
 
 CXX         = g++
-CXXFLAGS    = -Ofast -static
-LDFLAGS     = -Ofast -static
+CXXFLAGS    = -Ofast #-static # -DDEBUG
+LDFLAGS     = -Ofast #-static
 
 
 # Не трогайте, если не знаете, что к чему
@@ -40,9 +40,6 @@ OBJ         = $(SOURCES:.cpp=.o)
 all: $(OBJ)
 	@echo "  LD   $^ -> pako"
 	@g++ $(CXXFLAGS) -o pako $^ $(CMLIBS)
-
-debug: all
-	
 
 %.o: %.cpp
 	@echo "  CXX  $< -> $@"

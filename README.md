@@ -1,13 +1,15 @@
 # PAKO!
 
 Introducing **Pako!**  
-The package manager which will be used in currently nonexistent mobile Linux distribution!  
+Another package manager  
 [![Makefile CI](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml/badge.svg?branch=main)](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml)  
 
-:warning: STILL IN DEVELOPMENT. DEVBUILDS :warning: 
+:warning: STILL IN DEVELOPMENT. :warning:  
+I am not responsible for any broken systems :)  
 
 # Installation:
-For this you need a c++ compiler compatible with c++17 and ```make```. 
+For this you need a c++ compiler compatible with c++17, ```libarchive```, ```liblzma``` and ```make```
+  
 Debian-like distributions:
 ```
 apt install git g++ make libarchive-dev liblzma-dev
@@ -37,17 +39,11 @@ You can use ``-j`` flag to specify the  amount of cores to use while compilation
 # Functionality:
 :exclamation: Important notice :exclamation:  
 Currently only these architectures supported:  
-	- [x] x86_64
-	- [x] i386
-	- [x] aarch64
-	- [x] arm
-	- [x] ppc
-	- [x] ppc64
-	- [x] mips
-	- [x] mipsel
-- [x] Pre-installation and Post-installation script support
-- [X]  symlinks support
-- [X] Support dependencies (somehow)
-- [X] Solve dependencies on package removal
-
-
+- [x] x86_64
+- [x] i386
+- [x] aarch64
+- [x] arm
+- [x] ppc
+- [x] ppc64
+- [x] mips
+- [x] mipsel
