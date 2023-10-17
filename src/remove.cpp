@@ -1,7 +1,15 @@
-// Для простоты
-#include <bits/stdc++.h>
+/*
+ * Remove function
+ */
+
+#include <iostream>
+#include <vector>
 #include <filesystem>
 #include <unistd.h>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <cstring>
 
 extern bool getPackageData(std::string path, std::string packageInfo[3]);
 extern void debugmsg(std::string msg);

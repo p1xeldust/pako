@@ -11,8 +11,7 @@ extern void debugmsg(std::string msg);
 
 void printHeader() {
     cout << left
-//	 << "._________________________._________._________." << endl
-	 << setw(46) << setfill('_') << "_" << setfill(' ') << "_" << endl
+	 << setw(46) << setfill('_') << " " << setfill(' ') << " " << endl
          << "| " << setw(24) << "Name"
          << "| " << setw(8)  << "Version"
          << "| " << setw(8)  << "Arch"
@@ -23,7 +22,7 @@ void printHeader() {
 void printFooter() {
     cout << left
 	 << setw(26) << setfill('_') << "|" << setw(10) << "|" << setw(10) << "|" << setfill(' ') << "|" << endl
-         << "| " << setw(44) << "Yet " + (string)VERSION << "|" << endl
+         << "| " << setw(44) << "pako " + (string)VERSION << "|" << endl
 	<< setw(46) << setfill('_') << "|" << setfill(' ') << "|" << endl;
 }
 

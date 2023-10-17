@@ -1,7 +1,8 @@
-// Для простоты
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
 #include <exception>
 #include <filesystem>
+#include <algorithm>
 
 #ifdef _WIN32
     #error "Windows is unavailable now"

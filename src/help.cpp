@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void  Help() {
+void Help() {
     #if LOGO_ENABLE == 1
     cout << endl
     << "   ███████ ███ ███  ████ ████████    █████" << endl

@@ -11,7 +11,6 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-// Для простоты
 #include <iostream>
 #include <fstream>
 #include <vector>
