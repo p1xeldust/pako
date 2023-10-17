@@ -10,13 +10,13 @@
 #ifdef _android_
     #error "Android is unavailable now"
 #endif
+
 extern void Help();
 extern void Version();
 extern int8_t Install(std::vector<std::string> arguments);
 extern int8_t Remove(std::vector<std::string> arguments);
 extern int8_t List(std::vector<std::string> arguments);
 
-// Чтобы всем удобней было. Да, больше весит и выполняется чуууууууть дольше, но полезно
 std::vector<std::string> arguments;
 
 void debugmsg(std::string msg) {

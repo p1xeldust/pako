@@ -1,7 +1,3 @@
-/*
- * Remove function
- */
-
 #include <iostream>
 #include <vector>
 #include <filesystem>
