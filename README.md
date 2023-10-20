@@ -10,7 +10,7 @@ Currently only these architectures supported:
 
 
 ## Installation:
-For this you need a c++ compiler compatible with c++17, **libarchive**, **liblzma**, and **make**
+For this you need a **c++ compiler compatible with c++17**, **libarchive**, **liblzma**, and **make**
 
 Debian-like distributions:
 ```
