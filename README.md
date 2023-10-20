@@ -35,14 +35,6 @@ You can use ``-j`` flag to specify the  amount of cores to use while compilation
  make -j{nproc}
 ```
 
-:exclamation: Important notice :exclamation:  
-Currently only these architectures supported:  
-- [x] x86_64
-- [x] i386
-- [x] aarch64
-- [x] arm
-- [x] ppc
-- [x] ppc64
-- [x] mips
-- [x] mipsel
+:exclamation: Currently only these architectures supported:  
+``x86_64``, ``i386``, ``aarch64``, ``arm``, ``ppc``, ``ppc64``, ``mips``, ``mipsel``
 
