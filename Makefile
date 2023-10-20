@@ -3,7 +3,7 @@ PREFIX      =
 VAR_PATH    =
 TMP_PATH    =
 
-LOGO_ENABLE = 1 # 0 / 1
+LOGO_ENABLE = 0 # 0 / 1
 EASTER_EGG  = 0 # 0 / 1
 
 CXX         = g++
