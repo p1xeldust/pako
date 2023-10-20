@@ -21,9 +21,11 @@ void printHeader() {
 
 void printFooter() {
     cout << left
-	 << setw(26) << setfill('_') << "|" << setw(10) << "|" << setw(10) << "|" << setfill(' ') << "|" << endl
+        #if EASTER_EGG == 1
+	     << setw(26) << setfill('_') << "|" << setw(10) << "|" << setw(10) << "|" << setfill(' ') << "|" << endl
          << "| " << setw(44) << "pako " + (string)VERSION << "|" << endl
-	<< setw(46) << setfill('_') << "|" << setfill(' ') << "|" << endl;
+        #endif
+	     << setw(46) << setfill('_') << "|" << setfill(' ') << "|" << endl;
 }
 
 int8_t List(std::vector<std::string> arguments) {
