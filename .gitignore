@@ -1,0 +1,7 @@
+pako
+.gitignore
+*.o
+compile_flags.txt
+.github/
+.vscode/
+.git
