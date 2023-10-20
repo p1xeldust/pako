@@ -1,10 +1,10 @@
 # Пользовательские переменные для установки пакетов. На здоровье.
-PREFIX      = /opt
+PREFIX      = 
 VAR_PATH    =
 TMP_PATH    =
 
-LOGO_ENABLE = # 0 / 1
-EASTER_EGG  = # 0 / 1
+LOGO_ENABLE = 1 # 0 / 1
+EASTER_EGG  = 0 # 0 / 1
 
 CXX         = g++
 CXXFLAGS    = -Ofast # -static -DDEBUG
@@ -15,7 +15,7 @@ LDFLAGS     = -Ofast # -static
 
 # Проверка переменных, если не заданы
 ifeq ($(PREFIX),)
-PREFIX      = /
+PREFIX      = /opt
 endif
 ifeq ($(VAR_PATH),)
 VAR_PATH    = /var/lib/pako
