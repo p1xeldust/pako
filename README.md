@@ -7,7 +7,7 @@ Another package manager!
 :warning: STILL IN DEVELOPMENT :warning: 
 
 # Installation:
-For this you need a c++ compiler compatible with c++17, ```libarchive```, ```liblzma```, and ```make```
+For this you need a c++ compiler compatible with c++17, **libarchive**, **liblzma**, and **make**
 
 Debian-like distributions:
 ```
@@ -21,7 +21,7 @@ After this step, go to pako folder:
 ```
 cd pako
 ```
-Finally, use ```make``` to compile package manager!
+Finally, use ``make`` to compile package manager!
 ```
 make
 ```
@@ -36,5 +36,5 @@ You can use ``-j`` flag to specify the  amount of cores to use while compilation
 ```
 
 :exclamation: Currently only these architectures supported:  
-``x86_64``, ``i386``, ``aarch64``, ``arm``, ``ppc``, ``ppc64``, ``mips``, ``mipsel``
+**x86_64**, **i386**, **aarch64**, **arm**, **ppc**, **ppc64**, **mips**, **mipsel**
 
