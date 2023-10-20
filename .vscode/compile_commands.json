@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-DLAB_PGTBL, -DSOL_PGTBL]

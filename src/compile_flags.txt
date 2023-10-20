@@ -1,0 +1,6 @@
+-DPREFIX="/opt" 
+-DVAR_PATH="/opt/var/lib/pako" 
+-DTMP_PATH="/tmp/pako"
+-DVERSION="0.9-devbuild"
+-DEASTER_EGG=1
+-DLOGO_ENABLE=1
