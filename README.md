@@ -4,7 +4,7 @@ Introducing **Pako!**
 Another package manager!  
 [![Makefile CI](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml/badge.svg?branch=main)](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml)  
 
-:warning: STILL IN DEVELOPMENT. DEVBUILDS :warning: 
+:warning: STILL IN DEVELOPMENT :warning: 
 
 # Installation:
 For this you need a c++ compiler compatible with c++17, ```libarchive```, ```liblzma```, and ```make```

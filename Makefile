@@ -7,8 +7,8 @@ LOGO_ENABLE = 1 # 0 / 1
 EASTER_EGG  = 0 # 0 / 1
 
 CXX         = g++
-CXXFLAGS    = -Ofast #-static # -DDEBUG
-LDFLAGS     = -Ofast #-static
+CXXFLAGS    = -Ofast # -static -DDEBUG
+LDFLAGS     = -Ofast # -static
 
 
 # Не трогайте, если не знаете, что к чему

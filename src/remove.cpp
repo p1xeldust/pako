@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cstring>
 
-extern bool getPackageData(std::string path, std::string packageInfo[3]);
+extern bool getPackageData(std::string path, std::string packageData[3]);
 extern void debugmsg(std::string msg);
 
 using namespace std;
@@ -59,18 +59,22 @@ void removePackageSource(string listFilePath) {
             fs::remove(files[i]);
             debugmsg("[DEBUG] Removed file " + files[i]);
         }
-        else if(fs::exists(files[i]) && fs::is_directory(files[i])) {
+    }
+    for(size_t i=0; i<files.size(); i++) {
+        if(fs::exists(files[i]) && fs::is_directory(files[i])) {
             fs::remove(files[i]);
-            debugmsg("[DEBUG] Removed symlink " + files[i]);
+            debugmsg("[DEBUG] Removed directory " + files[i]);
         }
-        else if(fs::exists(files[i]) && fs::is_symlink(files[i])) {
+    }
+    for(size_t i=0; i<files.size(); i++) {
+        if(fs::exists(files[i]) && fs::is_symlink(files[i])) {
             fs::remove(files[i]);
             debugmsg("[DEBUG] Removed symlink " + files[i]);
         }
     }
 }
 
-bool flag_force_remove = false;
+bool force_remove = false;
 int8_t Remove(std::vector<std::string> arguments) {
     if(geteuid() != 0) {
 		cerr << "[i] Operation requires superuser privileges." << endl;
@@ -78,12 +82,15 @@ int8_t Remove(std::vector<std::string> arguments) {
 	}
 
     for(int i = 0; i < arguments.size(); i++) {
-        if(arguments[i] == (string)"--force-remove") {
-            flag_force_remove = true;
-            arguments.erase(std::find(arguments.begin(), arguments.end(), "--force-remove"));
-            continue;
+        //debugmsg(arguments[i]);
+        for(size_t j=0; j<arguments.size(); j++) {
+            if(arguments[j] == "--force-remove") {
+                force_remove = true;
+	        arguments.erase(std::remove(arguments.begin(), arguments.end(), "--force-remove"), arguments.end());
+                continue;
+            }
         }
-        
+
         if(!fs::exists((string)VAR_PATH + "/packages/" + arguments[i])) {
             cout << "Package " << arguments[i] << " is not installed" << endl;
             return 1;
@@ -91,21 +98,20 @@ int8_t Remove(std::vector<std::string> arguments) {
 
         string dataFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/info";
         string listFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/files";
-        
-        string packageInfo[3];
+        string packageData[3];
 
         debugmsg("[Debug] dataFilePath " + dataFilePath);
         debugmsg("[Debug] listFilePath " + listFilePath);
-
-        cout << "[i] Preparing " << arguments[i] << endl;
-        if(!flag_force_remove)
-            if(!solveDeps(packageInfo[0])) {
+	    getPackageData(dataFilePath, packageData);
+        cout << "Preparing " << packageData[0] << ":" << packageData[1] << " (" << packageData[2] << ")" << endl;
+        if(!force_remove) {
+            if(!solveDeps(packageData[0])) {
                 return 2;
             }
-    
+        }
         removePackageSource(listFilePath);
         fs::remove_all((string)VAR_PATH + "/packages/" + arguments[i]);
-        cout << "[i] Removed " << arguments[i] << endl;
+        cout << "Removed " << arguments[i] << endl;
     }
         #if EASTER_EGG == 1
 	std::cout << "Message from developer: Thank you!" << std::endl;
