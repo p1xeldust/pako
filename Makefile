@@ -30,7 +30,7 @@ ifeq ($(TMP_PATH),)
 EASTER_EGG  = 0
 endif
 
-VERSION	    = "0.9 dev_build"
+VERSION	    = "devbuild"
 CMCXXFLAGS  = -std=c++17 -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DEASTER_EGG=$(EASTER_EGG) -DLOGO_ENABLE=$(LOGO_ENABLE)
 CMLIBS      = -larchive -llzma
 SOURCES     = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp src/help.cpp
