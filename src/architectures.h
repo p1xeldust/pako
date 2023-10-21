@@ -1,7 +1,7 @@
 #ifndef ARCHITECTURES_H
 #define ARCHITECTURES_H 1
 
-// x86
+// x86/x86_64
 #ifdef __x86_64
         #define HOSTARCH "amd64"
 #endif
