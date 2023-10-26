@@ -241,10 +241,12 @@ bool checkConflicts(string dataFilePath) {
 	return true;
 }
 int8_t Install(std::vector<std::string> arguments) {
+    #ifdef NOSU
     if(getuid() != 0) { // Проверочка на выполнение от суперпользователя.
         cerr << "Operation requires superuser privileges" << endl;
         return 127;
     }
+    #endif
 	fs::remove_all((string)TMP_PATH);
 	for(size_t i=0; i<arguments.size(); i++) {
 		if(!mkTemp((string)TMP_PATH + "/package" + to_string(i))) {
@@ -271,9 +273,9 @@ int8_t Install(std::vector<std::string> arguments) {
 		/* Проверка архитектуры. */
 		if(!checkArch(packageData[1])) {
 			string ans;
-			cout << "Uncompatible architecture detected:" << packageData[0] << endl << "Proceed? [y/N] ";
+			cout << "Incompatible architecture: " << packageData[0] << endl << "Proceed? [y/N] ";
 			cin >> ans;
-			if(ans != "y" || ans != "yes")
+			if(!(ans == "y" || ans == "yes"))
 				return 5;
 		}
 		/* Зависимости и конфликты */

@@ -1,13 +1,13 @@
 # Пользовательские переменные для установки пакетов. На здоровье.
 PREFIX      = /data/data/com.termux/files/usr
-VAR_PATH    =
-TMP_PATH    =
+VAR_PATH    = /data/data/com.termux/files/usr/var
+TMP_PATH    = /data/data/com.termux/files/usr/tmp
 
 CC          = gcc
-CFLAGS      = -Ofast # -static -DDEBUG
 CXX         = g++
-CXXFLAGS    = -Ofast # -static -DDEBUG
-LDFLAGS     = -Ofast # -static
+CFLAGS      = -Ofast -DDEBUG
+CXXFLAGS    = -O3 -DDEBUG
+LDFLAGS     = -Ofast
 
 
 # Не трогайте, если не знаете, что к чему
@@ -30,6 +30,9 @@ CC          = gcc
 endif
 ifeq ($(CXX),)
 CXX         = g++
+endif
+ifneq ($(NOSU),1)
+NOSU        = 0
 endif
 
 VERSION	    = "devel"
@@ -58,4 +61,6 @@ clean:
 	@rm -f $(COBJ) $(CXXOBJ) pako
 
 install: all # Я не изверг, поэтому здесь есть DESTDIR
+	install -d ${DESTDIR}/usr/bin
 	install -m 755 pako ${DESTDIR}/usr/bin
+	install -m 755 scripts/pako-builder ${DESTDIR}/usr/bin
