@@ -4,15 +4,8 @@
 #include <filesystem>
 #include <algorithm>
 
-#ifdef _WIN32
-    #error "Windows is unavailable now"
-#endif
-#ifdef _android_
-    #error "Android is unavailable now"
-#endif
-
-extern void Help();
-extern void Version();
+extern "C" void help();
+extern "C" void version();
 extern int8_t Install(std::vector<std::string> arguments);
 extern int8_t Remove(std::vector<std::string> arguments);
 extern int8_t List(std::vector<std::string> arguments);
@@ -35,7 +28,12 @@ int main(int argc, char* argv[]) {
     }
     for(int i=1; i<argc; i++)
         arguments.push_back(std::move(argv[i]));
-    if(std::find(arguments.begin(), arguments.end(), "-i") != arguments.end()) {
+
+    if(std::find(arguments.begin(), arguments.end(), "-h") != arguments.end() || arguments.size() < 1) {
+        help();
+        return 0;
+    }
+    else if(std::find(arguments.begin(), arguments.end(), "-i") != arguments.end()) {
         arguments.erase(std::find(arguments.begin(), arguments.end(), "-i"));
         return(Install(arguments));
     }
@@ -47,15 +45,11 @@ int main(int argc, char* argv[]) {
         arguments.erase(std::find(arguments.begin(), arguments.end(), "-l"));
         return(List(arguments));
     }
-    else for(uint8_t i=0; i<4; i++)
-        if(std::find(arguments.begin(), arguments.end(), "-h") != arguments.end() || arguments.size() < 1) {
-            Help();
-            break;
-        }
-    for(uint8_t i=0; i<4; i++)
-        if(std::find(arguments.begin(), arguments.end(), "-v") != arguments.end()) {
-            Version();
-            break;
-        }
+    else if(std::find(arguments.begin(), arguments.end(), "-v") != arguments.end()) {
+        version();
+        return 0;
+    } else {
+        std::cout << "[Error] Unknown option '" << arguments[0] << "'"  << std::endl;
+    }
     return 0;
 }

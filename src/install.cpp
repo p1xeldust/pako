@@ -9,8 +9,9 @@
 #include <filesystem>
 #include <shared_mutex>
 #include <string>
+#include <sstream>
 
-#include "architectures.h"
+#include "package/architectures.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -367,8 +368,8 @@ int8_t Install(std::vector<std::string> arguments) {
 		if(fs::exists((string)VAR_PATH +"/packages/" + packageData[0] + "/install"))
 			system(("sh " + (string)VAR_PATH +"/packages/" + packageData[0] + "/install" + " --postinst").c_str());
 	}
-	#if EASTER_EGG == 1
-		std::cout << "Message from developer: Thank you!" << std::endl;
+	#if DEMO == 1
+		std::cout << "That's how it works!" << std::endl;
 	#endif
 	return 0;
 }
