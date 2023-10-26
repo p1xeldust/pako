@@ -1,11 +1,10 @@
 # Пользовательские переменные для установки пакетов. На здоровье.
-PREFIX      = 
+PREFIX      = /data/data/com.termux/files/usr
 VAR_PATH    =
 TMP_PATH    =
 
-LOGO_ENABLE = 0 # 0 / 1
-EASTER_EGG  = 0 # 0 / 1
-
+CC          = gcc
+CFLAGS      = -Ofast # -static -DDEBUG
 CXX         = g++
 CXXFLAGS    = -Ofast # -static -DDEBUG
 LDFLAGS     = -Ofast # -static
@@ -23,31 +22,40 @@ endif
 ifeq ($(TMP_PATH),)
 TMP_PATH    = /tmp/pako
 endif
-ifeq ($(TMP_PATH),)
-LOGO_ENABLE = 0
+ifeq ($(DEMO),)
+DEMO  = 0
 endif
-ifeq ($(TMP_PATH),)
-EASTER_EGG  = 0
+ifeq ($(CC),)
+CC          = gcc
+endif
+ifeq ($(CXX),)
+CXX         = g++
 endif
 
-VERSION	    = "devbuild"
-CMCXXFLAGS  = -std=c++17 -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DEASTER_EGG=$(EASTER_EGG) -DLOGO_ENABLE=$(LOGO_ENABLE)
+VERSION	    = "devel"
+CMCXXFLAGS  = -std=c++17
+CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO)
 CMLIBS      = -larchive -llzma
-SOURCES     = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp src/help.cpp
-OBJ         = $(SOURCES:.cpp=.o)
+CXXSOURCES  = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp
+CSOURCES    = src/info/help.c src/info/version.c
+CXXOBJ      = $(CXXSOURCES:.cpp=.o)
+COBJ        = $(CSOURCES:.c=.o)
+BIN         = pako
+all: $(COBJ) $(CXXOBJ)
+	@echo "  CXXLD  $(BIN)"
+	@$(CXX) $(CFLAGS) $(CXXFLAGS) -o $(BIN) $^ $(CMLIBS)
 
-
-all: $(OBJ)
-	@echo "  LD   $^ -> pako"
-	@g++ $(CXXFLAGS) -o pako $^ $(CMLIBS)
+%.o: %.c
+	@echo "  CC     $< -> $@"
+	@$(CC) $(CXXFLAGS) $(CXXCMFLAGS) $(CVARIABLES) -c $< -o $@
 
 %.o: %.cpp
-	@echo "  CXX  $< -> $@"
-	@g++ $(CXXFLAGS) $(CMCXXFLAGS) -c $< -o $@
+	@echo "  CXX    $< -> $@"
+	@$(CXX) $(CXXFLAGS) $(CXXCMFLAGS) $(CVARIABLES) -c $< -o $@
 
 clean:
 	@echo "Cleaning up..."
-	@rm -f $(OBJ) pako
+	@rm -f $(COBJ) $(CXXOBJ) pako
 
 install: all # Я не изверг, поэтому здесь есть DESTDIR
 	install -m 755 pako ${DESTDIR}/usr/bin

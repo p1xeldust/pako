@@ -22,7 +22,7 @@ void printHeader() {
 void printFooter() {
     cout << left
 	     << setw(26) << setfill('_') << "|" << setw(10) << "|" << setw(10) << "|" << setfill(' ') << "|"
-         #if EASTER_EGG == 1
+         #if DEMO == 1
          << endl 
          << "| " << setw(44) << "pako " + (string)VERSION << "|" << endl
          << setw(46) << setfill('_') << "|" << "|"

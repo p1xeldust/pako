@@ -114,7 +114,7 @@ int8_t Remove(std::vector<std::string> arguments) {
         cout << "Removed " << arguments[i] << endl;
     }
         #if EASTER_EGG == 1
-	std::cout << "Message from developer: Thank you!" << std::endl;
+	std::cout << "That's how it works!" << std::endl;
 	#endif
     return 0;
 }
