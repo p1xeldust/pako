@@ -2,9 +2,9 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "pako-update-0.1.4" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "pako-update-0.1.4" ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -14,6 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install libarchive and liblzma
-      run: sudo apt install libarchive-dev liblzma-dev
+      run: sudo apt install git g++ make libarchive-dev liblzma-dev
     - name: make
       run: make
