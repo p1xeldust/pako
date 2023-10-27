@@ -1,7 +1,7 @@
 # Пользовательские переменные для установки пакетов. На здоровье.
-PREFIX      = /data/data/com.termux/files/usr
-VAR_PATH    = /data/data/com.termux/files/usr/var
-TMP_PATH    = /data/data/com.termux/files/usr/tmp
+PREFIX      =
+VAR_PATH    =
+TMP_PATH    =
 
 CC          = gcc
 CXX         = g++
