@@ -6,25 +6,21 @@
 
 extern "C" void help();
 extern "C" void version();
+extern "C" void debugmsg(const char* message);
+extern "C" void errormsg(const char* message);
 extern int8_t Install(std::vector<std::string> arguments);
 extern int8_t Remove(std::vector<std::string> arguments);
 extern int8_t List(std::vector<std::string> arguments);
 
 std::vector<std::string> arguments;
 
-void debugmsg(std::string msg) {
-	#ifdef DEBUG
-		std::cout << "\e[1;90m" << "[DEBUG] " << msg << "\e[1;0m" << std::endl;
-	#endif
-}
-
 int main(int argc, char* argv[]) {
     try {
         if(!std::filesystem::is_directory((std::string)VAR_PATH + "/packages/"))
             std::filesystem::create_directories((std::string)VAR_PATH + "/packages/");
     } catch (const std::exception& e) {
-        std::cout << "Unable to create packages list. Try running pako as superuser." << std::endl;
-        debugmsg("[DEBUG:createVar] " + (std::string)e.what());
+        errormsg("Enable to create packages list. Try running pako as superuser.");
+        debugmsg(("[CreateVar] " + (std::string)e.what()).c_str());
     }
     for(int i=1; i<argc; i++)
         arguments.push_back(std::move(argv[i]));

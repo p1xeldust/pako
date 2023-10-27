@@ -35,12 +35,12 @@ ifneq ($(NOSU),1)
 NOSU        = 0
 endif
 
-VERSION	    = "devel"
+VERSION	    = "dev"
 CMCXXFLAGS  = -std=c++17
-CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO)
+CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
 CMLIBS      = -larchive -llzma
 CXXSOURCES  = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp
-CSOURCES    = src/info/help.c src/info/version.c
+CSOURCES    = src/output/help.c src/output/version.c src/output/print.c
 CXXOBJ      = $(CXXSOURCES:.cpp=.o)
 COBJ        = $(CSOURCES:.c=.o)
 BIN         = pako

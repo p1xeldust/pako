@@ -7,11 +7,11 @@
 using namespace std;
 namespace fs = std::filesystem;
 extern bool getPackageData(std::string path, std::string packageInfo[3]);
-extern void debugmsg(std::string msg);
+extern "C" void debugmsg(const char* message);
 
 void printHeader() {
     cout << left
-	 << setw(46) << setfill('_') << " " << setfill(' ') << " " << endl
+	     << setw(46) << setfill('_') << " " << setfill(' ') << " " << endl
          << "| " << setw(24) << "Name"
          << "| " << setw(8)  << "Version"
          << "| " << setw(8)  << "Arch"
@@ -37,7 +37,7 @@ int8_t List(std::vector<std::string> arguments) {
 	    printHeader();
             for(size_t i=0; i<arguments.size(); i++) {
                 if(fs::exists(packageListPath + arguments[i]) && fs::is_directory(packageListPath + arguments[i])) {
-		    debugmsg("Found package in " + arguments[i]);
+		    debugmsg(("Found package in " + arguments[i]).c_str());
                     getPackageData(packageListPath + arguments[i] + "/info", packageInfo);
                     cout << left
                          << "| " << setw(24) << packageInfo[0]
@@ -45,7 +45,7 @@ int8_t List(std::vector<std::string> arguments) {
                          << "| " << setw(8)  << packageInfo[1]
                          << "|"  << endl;
                 } else {
-                    debugmsg("Not found package in " + arguments[i]);
+                    debugmsg(("Not found package in " + arguments[i]).c_str());
                     cout << left
                          << "| " << setw(24) << arguments[i]
                          << "| " << setw(8)  << "unknown"
