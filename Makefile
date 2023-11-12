@@ -1,5 +1,5 @@
 # Пользовательские переменные для установки пакетов. На здоровье.
-PREFIX      =
+PREFIX      = /data/data/com.termux/files/usr
 VAR_PATH    =
 TMP_PATH    =
 
@@ -39,8 +39,8 @@ VERSION	    = "dev"
 CMCXXFLAGS  = -std=c++17
 CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
 CMLIBS      = -larchive -llzma
-CXXSOURCES  = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp
-CSOURCES    = src/output/help.c src/output/version.c src/output/print.c
+CXXSOURCES  = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp src/output/help.cpp src/output/version.cpp src/output/print.cpp
+CSOURCES    =
 CXXOBJ      = $(CXXSOURCES:.cpp=.o)
 COBJ        = $(CSOURCES:.c=.o)
 BIN         = pako

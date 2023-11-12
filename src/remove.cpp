@@ -7,11 +7,10 @@
 #include <algorithm>
 #include <cstring>
 
-extern bool getPackageData(std::string dataFilePath, std::string packageData[3]);
+#include "output/print.h"
 
-extern "C" void debugmsg(const char* message);
-extern "C" void msg(const char* message);
-extern "C" void errormsg(const char* message);
+extern bool getPackageData(std::string dataFilePath, std::string packageData[3]);
+extern Print out;
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -22,7 +21,7 @@ bool solveDeps(string packageName) {
         if(entry.path().string() == (string)VAR_PATH + "/packages/" + packageName)
             continue;
         ifstream dataFile(entry.path().string() + "/info", ios::in);
-    
+
         for(string line; getline(dataFile, line); dataFile.good()) {
 
             if(line.find("deps:") != std::string::npos) {
@@ -31,15 +30,14 @@ bool solveDeps(string packageName) {
                 for(string dependency; dependenciesList >> dependency;)
                     if(dependency == packageName)
                         dependencies.push_back(std::move(entry.path().string().substr(entry.path().string().find_last_of("/") +1)));
-		    }
-	    }
-        
+		}
+	  }
     }
     if(dependencies.size() <= 0) {
-        debugmsg("[Debug.SolveDeps] Solved dependencies!");
+        out.debugmsg("[SolveDeps] Solved dependencies!");
         return true;
     } else {
-        msg("[i] Unable to solve dependencies. These packages:");
+        out.msg("[i] Unable to solve dependencies. These packages:");
         for(size_t i=0; i < dependencies.size(); i++)
             cout << " '" << dependencies[i] << "'";
         cout << " depends on " << packageName
@@ -54,25 +52,25 @@ void removePackageSource(string listFilePath) {
     ifstream listFile(listFilePath);
     for(string line; getline(listFile, line); listFile.good()) {
         files.push_back(std::move((string)PREFIX + "/" + line));
-        //debugmsg("[DEBUG] Added " + (string)PREFIX + "/" + line + " to remove list");
+        //out.debugmsg(" Added " + (string)PREFIX + "/" + line + " to remove list");
     }
     /* Удаление файлов */
     for(size_t i=0; i<files.size(); i++) {
         if(fs::exists(files[i]) && !fs::is_symlink(files[i])) {
             fs::remove(files[i]);
-            debugmsg(("[DEBUG] Removed file " + files[i]).c_str());
+            out.debugmsg("Removed file " + files[i]);
         }
     }
     for(size_t i=0; i<files.size(); i++) {
         if(fs::exists(files[i]) && fs::is_directory(files[i])) {
             fs::remove(files[i]);
-            debugmsg(("[DEBUG] Removed directory " + files[i]).c_str());
+            out.debugmsg("Removed directory " + files[i]);
         }
     }
     for(size_t i=0; i<files.size(); i++) {
         if(fs::exists(files[i]) && fs::is_symlink(files[i])) {
             fs::remove(files[i]);
-            debugmsg(("[DEBUG] Removed symlink " + files[i]).c_str());
+            out.debugmsg("Removed symlink " + files[i]);
         }
     }
 }
@@ -80,12 +78,12 @@ void removePackageSource(string listFilePath) {
 bool force_remove = false;
 int8_t Remove(std::vector<std::string> arguments) {
     if(geteuid() != 0) {
-		errormsg("[i] Operation requires superuser privileges.");
+		out.errormsg("[i] Operation requires superuser privileges.");
 		return 127;
 	}
 
     for(int i = 0; i < arguments.size(); i++) {
-        //debugmsg(arguments[i]);
+        //out.debugmsg(arguments[i]);
         for(size_t j=0; j<arguments.size(); j++) {
             if(arguments[j] == "--force-remove") {
                 force_remove = true;
@@ -95,7 +93,7 @@ int8_t Remove(std::vector<std::string> arguments) {
         }
 
         if(!fs::exists((string)VAR_PATH + "/packages/" + arguments[i])) {
-            errormsg(("Package " + arguments[i] + " is not installed").c_str());
+            out.errormsg("Package " + arguments[i] + " is not installed");
             return 1;
         }
 
@@ -103,10 +101,10 @@ int8_t Remove(std::vector<std::string> arguments) {
         string listFilePath = (string)VAR_PATH + "/packages/" + arguments[i] + "/files";
         string packageData[3];
 
-        debugmsg(("[Debug] dataFilePath " + dataFilePath).c_str());
-        debugmsg(("[Debug] listFilePath " + listFilePath).c_str());
+        out.debugmsg("dataFilePath " + dataFilePath);
+        out.debugmsg("listFilePath " + listFilePath);
 	    getPackageData(dataFilePath, packageData);
-        msg(("Preparing " + packageData[0] + ":" + packageData[1] + " (" + packageData[2] + ")").c_str());
+        out.msg("Preparing " + packageData[0] + ":" + packageData[1] + " (" + packageData[2] + ")");
         if(!force_remove) {
             if(!solveDeps(packageData[0])) {
                 return 2;
@@ -114,7 +112,7 @@ int8_t Remove(std::vector<std::string> arguments) {
         }
         removePackageSource(listFilePath);
         fs::remove_all((string)VAR_PATH + "/packages/" + arguments[i]);
-        msg(("Removed " + arguments[i]).c_str());
+        out.msg("Removed " + arguments[i]);
     }
         #if EASTER_EGG == 1
 	std::cout << "That's how it works!" << std::endl;

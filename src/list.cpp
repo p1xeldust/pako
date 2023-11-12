@@ -4,10 +4,13 @@
 #include <vector>
 #include <algorithm>
 
+#include "output/print.h"
+
+extern bool getPackageData(std::string path, std::string packageInfo[3]);
+extern Print out;
+
 using namespace std;
 namespace fs = std::filesystem;
-extern bool getPackageData(std::string path, std::string packageInfo[3]);
-extern "C" void debugmsg(const char* message);
 
 void printHeader() {
     cout << left
@@ -37,7 +40,7 @@ int8_t List(std::vector<std::string> arguments) {
 	    printHeader();
             for(size_t i=0; i<arguments.size(); i++) {
                 if(fs::exists(packageListPath + arguments[i]) && fs::is_directory(packageListPath + arguments[i])) {
-		    debugmsg(("Found package in " + arguments[i]).c_str());
+		    out.debugmsg("Found package in " + arguments[i]);
                     getPackageData(packageListPath + arguments[i] + "/info", packageInfo);
                     cout << left
                          << "| " << setw(24) << packageInfo[0]
@@ -45,7 +48,7 @@ int8_t List(std::vector<std::string> arguments) {
                          << "| " << setw(8)  << packageInfo[1]
                          << "|"  << endl;
                 } else {
-                    debugmsg(("Not found package in " + arguments[i]).c_str());
+                    out.debugmsg("Not found package in " + arguments[i]);
                     cout << left
                          << "| " << setw(24) << arguments[i]
                          << "| " << setw(8)  << "unknown"
