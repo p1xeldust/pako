@@ -1,18 +1,18 @@
-# Пользовательские переменные для установки пакетов. На здоровье.
-PREFIX      =
-VAR_PATH    =
-TMP_PATH    =
+# User variables
+PREFIX      = /opt
+VAR_PATH    =      # On prefix
+TMP_PATH    =      # On prefix
 
 CC          = gcc
 CXX         = g++
-CFLAGS      = -Ofast -DDEBUG
-CXXFLAGS    = -O3 -DDEBUG
-LDFLAGS     = -Ofast
+CFLAGS      = -Ofast -static
+CXXFLAGS    = -O3 -static
+LDFLAGS     = -Ofast -static
 
 
-# Не трогайте, если не знаете, что к чему
+# Don't touch anything пожалуйста :P
 
-# Проверка переменных, если не заданы
+# Setting default variables if some of them are undefined
 ifeq ($(PREFIX),)
 PREFIX      = /opt
 endif
@@ -37,10 +37,10 @@ endif
 
 VERSION	    = "dev"
 CMCXXFLAGS  = -std=c++17
-CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
-CMLIBS      = -larchive -llzma
-CXXSOURCES  = src/main.cpp src/install.cpp src/remove.cpp src/list.cpp
-CSOURCES    = src/output/help.c src/output/version.c src/output/print.c
+CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(PREFIX)/$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
+CMLIBS      = -larchive -llzma -lsqlite3
+CXXSOURCES  = src/install.cpp src/list.cpp src/main.cpp src/output/version.cpp src/output/help.cpp src/output/print.cpp src/remove.cpp src/db/init.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/solver.cpp src/package/checks.cpp src/package/unpack.cpp src/package/temp.cpp src/package/read.cpp
+CSOURCES    =
 CXXOBJ      = $(CXXSOURCES:.cpp=.o)
 COBJ        = $(CSOURCES:.c=.o)
 BIN         = pako
