@@ -1,5 +1,5 @@
-name: example
-version: 1.0
-arch: amd64
-deps:
-conflicts:
+name: pkg_name
+version: pkg_version
+arch: pkg_arch
+deps: pkg_dep1 pkg_dep2
+conflicts: pkg_conf1 pkg_conf2

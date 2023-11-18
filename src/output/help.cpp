@@ -1,13 +1,13 @@
 #include <iostream>
+#include "../pako.hpp"
 
-void help() {
+void Pako::help() {
     std::cout
-     << "pako " << VERSION << std::endl
-     << "Usage: pako <option> [arguments]" << std::endl
-     << "    -i    install packages" << std::endl
-     << "    -r    remove packages" << std::endl
-     << "    -l    list installed packages" << std::endl
-     << "    -h    print help message" << std::endl
-     << "    -v    print version" << std::endl
-     << std::endl;
+     << "pako " << VERSION << "\n"
+     << "Usage: pako <option> [arguments]\n"
+     << "    -i    install packages\n"
+     << "    -r    remove packages\n"
+     << "    -l    list installed packages\n"
+     << "    -h    print help message\n"
+     << "    -v    print version\n\n";
 }

@@ -1,10 +1,9 @@
-#include <string>
+#include <string.h>
 
 #ifndef PRINT_H
 #define PRINT_H
-class Print {
-private:
 
+class Print {
 public:
     void errormsg(std::string message);
     void debugmsg(std::string message);

@@ -4,70 +4,49 @@
 #include <vector>
 #include <algorithm>
 
-#include "output/print.h"
-
-extern bool getPackageData(std::string path, std::string packageInfo[3]);
-extern Print out;
+#include "pako.hpp"
 
 using namespace std;
-namespace fs = std::filesystem;
 
-void printHeader() {
-    cout << left
-	     << setw(46) << setfill('_') << " " << setfill(' ') << " " << endl
-         << "| " << setw(24) << "Name"
-         << "| " << setw(8)  << "Version"
-         << "| " << setw(8)  << "Arch"
-         << "| " << endl << left
-         << setw(26) << setfill('_') << "|" << setw(10) << "|" << setw(10) << "|" << setfill(' ') << "|" << endl;
-}
-
-void printFooter() {
-    cout << left
-	     << setw(26) << setfill('_') << "|" << setw(10) << "|" << setw(10) << "|" << setfill(' ') << "|"
-         #if DEMO == 1
-         << endl 
-         << "| " << setw(44) << "pako " + (string)VERSION << "|" << endl
-         << setw(46) << setfill('_') << "|" << "|"
-        #endif
-         << endl;
-}
-
-int8_t List(std::vector<std::string> arguments) {
-    string packageListPath = (string)VAR_PATH + "/packages/";
-    string packageInfo[3];
+int8_t Pako::list(std::vector<std::string> arguments) {
+    cout << "Name" << setw(20) << "" << "arch" << setw(6) << "" << "Version" << endl << endl;
     if(arguments.size() > 0) {
-	    printHeader();
             for(size_t i=0; i<arguments.size(); i++) {
-                if(fs::exists(packageListPath + arguments[i]) && fs::is_directory(packageListPath + arguments[i])) {
+                if(db.isInDatabase(arguments[i])) {
+
 		    out.debugmsg("Found package in " + arguments[i]);
-                    getPackageData(packageListPath + arguments[i] + "/info", packageInfo);
+                    string* packageInfo = db.readDBPackageData(arguments[i]);
                     cout << left
-                         << "| " << setw(24) << packageInfo[0]
-                         << "| " << setw(8)  << packageInfo[2]
-                         << "| " << setw(8)  << packageInfo[1]
-                         << "|"  << endl;
+                         << packageInfo[0] << setw(24-packageInfo[0].length()) << ""
+                         << packageInfo[1] << setw(10-packageInfo[1].length()) << ""
+                         << packageInfo[2] << setw(10-packageInfo[2].length()) << ""
+                         << endl;
                 } else {
                     out.debugmsg("Not found package in " + arguments[i]);
                     cout << left
-                         << "| " << setw(24) << arguments[i]
-                         << "| " << setw(8)  << "unknown"
-                         << "| " << setw(8)  << "unknown"
-                         << "|"  << endl;
-	        }
+                         << arguments[i] << setw(24-arguments[i].length()) << ""
+                         << "unknown" << setw(3) << ""
+                         << "unknown" << setw(3) << ""
+                         << endl;
+                 }
             }
-       printFooter();
     } else {
-	printHeader();
-        for(const auto& entry : fs::directory_iterator(packageListPath)) {
-            getPackageData(entry.path().string() + "/info", packageInfo);
-            cout << left
-                 << "| " << setw(24) << packageInfo[0]
-                 << "| " << setw(8)  << packageInfo[2]
-                 << "| " << setw(8)  << packageInfo[1]
-                 << "|" << endl;
-	}
-        printFooter();
+        std::string packageInfo[3];
+        sqlite3* db;
+        sqlite3_open(((std::string)VAR_PATH + "/packages.db").c_str(), &db);
+        sqlite3_stmt* stmt;
+        sqlite3_prepare_v2(db, "SELECT * FROM packages", -1, &stmt, 0);
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            for(uint8_t i=0; i<3; i++)
+                packageInfo[i] = (std::string)reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
+                cout << left
+                         << packageInfo[0] << setw(24-packageInfo[0].length()) << ""
+                         << packageInfo[1] << setw(10-packageInfo[1].length()) << ""
+                         << packageInfo[2] << setw(10-packageInfo[2].length()) << ""
+                         << endl;
+        }
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
     }
     return 0;
 }

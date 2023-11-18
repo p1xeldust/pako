@@ -1,5 +1,6 @@
 #include <iostream>
+#include "../pako.hpp"
 
-void version() {
-    std::cout << "pako " << VERSION << std::endl;
+void Pako::version() {
+    std::cout << "pako " << VERSION << "\n";
 }

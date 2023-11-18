@@ -21,9 +21,10 @@ bool Database::isInDatabase(std::string packageName) {
     return 0;
 }
 
-std::string *  Database::readDBPackageData(std::string dbPath, std::string packageName) {
-    std::string * packageData = new std::string[5];
-    sqlite3_open(dbPath.c_str(), &db);
+std::string * Database::readDBPackageData(std::string packageName) {
+    std::string* packageData = new std::string[5];
+    out.debugmsg("[readDBPackageData] Opening " + (std::string)VAR_PATH + "/packages.db");
+    sqlite3_open(((std::string)VAR_PATH + "/packages.db").c_str(), &db);
     sqlite3_stmt* stmt;
 
     sqlite3_prepare_v2(db, "SELECT * FROM packages WHERE name = ?;", -1, &stmt, 0);

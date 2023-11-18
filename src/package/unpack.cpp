@@ -5,27 +5,23 @@
 
 #include "package.h"
 
-bool Package::unpack(std::string filePath, std::string destinationPath) {
-struct archive* a;
+bool Package::unpack(std::string source, std::string destination) {
+struct archive* a = archive_read_new();
 struct archive_entry* entry;
 
-a = archive_read_new();
 archive_read_support_filter_xz(a);
 archive_read_support_format_tar(a);
 
-        if(archive_read_open_filename(a, filePath.c_str(), 10240) != 0) {
+        if(archive_read_open_filename(a, source.c_str(), 10240) != 0) {
                 archive_read_free(a);
-                out.errormsg("Not opening " + ((std::filesystem::path)filePath).filename().string());
+                out.errormsg("Can't extract " + ((std::filesystem::path)source).filename().string() + ": It's a broken package.");
                 return false;
         }
 
         while(archive_read_next_header(a, &entry) == 0) {
-                const char* entryPath = archive_entry_pathname(entry);
-                std::string extractPath = destinationPath + "/" + entryPath;
-
                 // "Распаковываем" символическую ссылку.
                 if(archive_entry_filetype(entry) == AE_IFLNK) {
-                        if (symlink(archive_entry_symlink(entry), extractPath.c_str()) != 0) {
+                        if (symlink(archive_entry_symlink(entry), (destination + "/" + archive_entry_pathname(entry)).c_str()) != 0) {
                                 // Ну или нет, если есть какая-то проблема
                                 archive_read_close(a);
                                 archive_read_free(a);
@@ -35,7 +31,7 @@ archive_read_support_format_tar(a);
                 }
                 // "Распаковываем" папку (тупо создаём эту папку).
                 if(archive_entry_filetype(entry) == AE_IFDIR) {
-                        if (mkdir(extractPath.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
+                        if (mkdir((destination + "/" + archive_entry_pathname(entry)).c_str(), S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
                                 // Ну или нет, если есть какая-то проблема
                                 archive_read_close(a);
                                 archive_read_free(a);
@@ -44,7 +40,7 @@ archive_read_support_format_tar(a);
                                 continue;
                         }
 
-                        FILE* file = fopen(extractPath.c_str(), "wb");
+                        FILE* file = fopen((destination + "/" + archive_entry_pathname(entry)).c_str(), "wb");
 
                         if(!file) {
                                 archive_read_close(a);
@@ -63,7 +59,7 @@ archive_read_support_format_tar(a);
 
                         // Сохраняем права доступа файла.
                         mode_t mode = archive_entry_perm(entry);
-                        chmod(extractPath.c_str(), mode);
+                        chmod((destination + "/" + archive_entry_pathname(entry)).c_str(), mode);
                 }
 
         archive_read_close(a);

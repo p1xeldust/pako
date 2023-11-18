@@ -4,21 +4,21 @@
 #include <filesystem>
 #include <algorithm>
 
-#include "pako.h"
+#include "pako.hpp"
 #include "db/database.h"
 
-Pako main;
+Pako pako;
 Database idb;
+Print out;
 
 std::vector<std::string> arguments;
 
 int main(int argc, char* argv[]) {
     try {
         if(!std::filesystem::is_directory((std::string)VAR_PATH + "/control/"))
-            std::filesystem::remove_all((std::string)VAR_PATH + "/control/");
             std::filesystem::create_directories((std::string)VAR_PATH + "/control/");
-        if(!std::filesystem::is_regular_file((std::string)VAR_PATH + "/packages.db/"))
-            idb.initDatabase((std::string)VAR_PATH + "/packages.db");
+        if(!std::filesystem::is_regular_file((std::string)VAR_PATH + "/packages.db"))
+            idb.initDatabase();
     } catch (const std::exception& e) {
         out.errormsg("Can't init database, try running pako as superuser.");
         out.debugmsg("initDatabase: " + (std::string)e.what());
@@ -26,23 +26,23 @@ int main(int argc, char* argv[]) {
     for(int i=1; i<argc; i++)
         arguments.push_back(std::move(argv[i]));
     if(std::find(arguments.begin(), arguments.end(), "-h") != arguments.end() || arguments.size() < 1) {
-        main.help();
+        pako.help();
         return 0;
     }
     else if(std::find(arguments.begin(), arguments.end(), "-i") != arguments.end()) {
         arguments.erase(std::find(arguments.begin(), arguments.end(), "-i"));
-        return(main.install(arguments));
+        return(pako.install(arguments));
     }
     else if(std::find(arguments.begin(), arguments.end(), "-r") != arguments.end()) {
         arguments.erase(std::find(arguments.begin(), arguments.end(), "-r"));
-        return(main.remove(arguments));
+        return(pako.remove(arguments));
     }
     else if(std::find(arguments.begin(), arguments.end(), "-l") != arguments.end()) {
         arguments.erase(std::find(arguments.begin(), arguments.end(), "-l"));
-        return(main.list(arguments));
+        return(pako.list(arguments));
     }
     else if(std::find(arguments.begin(), arguments.end(), "-v") != arguments.end()) {
-        main.version();
+        pako.version();
         return 0;
     } else {
         out.errormsg("Unknown action '" + arguments[0] + "'. Use -h for help.");
