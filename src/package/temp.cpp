@@ -3,7 +3,7 @@
 
 #include "package.h"
 
-bool Package::mkTemp(std::string path) {
+bool Package::make_tmp(std::string path) {
     out.debugmsg("mkTemp: Trying to make temp dir: " + path);
     try {
         if(std::filesystem::exists((std::string)TMP_PATH + "/" + path))
@@ -17,7 +17,7 @@ bool Package::mkTemp(std::string path) {
     return true;
 }
 
-bool Package::clearTemp() {
+bool Package::clear_tmp() {
     try {
         std::filesystem::remove_all((std::string)TMP_PATH);
     }

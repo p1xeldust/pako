@@ -2,7 +2,7 @@
 
 #include "package.h"
 
-bool Package::readPackageData(std::string dataFilePath, std::string packageData[3]) {
+bool Package::read_package_data(std::string dataFilePath, std::string packageData[3]) {
     std::ifstream dataFile(dataFilePath);
     for(std::string line, type, value; std::getline(dataFile, line); dataFile.good()) {
         type = line.substr(0, line.find_first_of(": "));

@@ -6,8 +6,8 @@
 
 #include "package.h"
 
-bool Package::solveDeps(std::string packageName) {
-    std::vector<std::string> deps;
+bool Package::solve_dependencies(std::string packageName) {
+    std::vector<std::string> dependencies;
     sqlite3* db; sqlite3_stmt* stmt;
     if (sqlite3_open(((std::string)VAR_PATH + "/packages.db").c_str(), &db)) {
         out.debugmsg("solveDeps: Can't open database: " + (std::string)sqlite3_errmsg(db));
@@ -30,17 +30,17 @@ bool Package::solveDeps(std::string packageName) {
                 std::istringstream depList(line.substr(line.find(':') + 1).erase(0, line.find_first_not_of(" \t")));
                 for(std::string dep; depList >> dep;)
                     if(dep == packageName)
-                        deps.push_back(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)));
+                        dependencies.push_back(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)));
                 }
           }
     }
-    if(deps.size() <= 0) {
+    if(dependencies.size() <= 0) {
         out.debugmsg("SolveDeps: solved deps!");
         return true;
     } else {
         out.errormsg("Unable to solve dependencies:");
-        for(size_t i=0; i < deps.size(); i++)
-            out.msg("Package '" + deps[i] + "' depends on " + packageName);
+        for(size_t i=0; i < dependencies.size(); i++)
+            out.msg("Package '" + dependencies[i] + "' depends on " + packageName);
         out.msg("Use --force-remove to avoid this check.");
         return false;
     }
@@ -49,7 +49,7 @@ bool Package::solveDeps(std::string packageName) {
 }
 
 
-void Package::removePackageSource(std::string listFilePath) {
+void Package::remove_package_source(std::string listFilePath) {
     std::vector<std::string> files;
     std::ifstream listFile(listFilePath);
     for(std::string line; getline(listFile, line); listFile.good()) {
@@ -76,7 +76,7 @@ void Package::removePackageSource(std::string listFilePath) {
         }
     }
     for(const auto file : files) {
-        if(std::filesystem::is_symlink(file) && std::filesystem::exists(std::filesystem::read_symlink(file))) {
+        if(std::filesystem::is_symlink(file) && !std::filesystem::exists(std::filesystem::read_symlink(file))) {
             std::filesystem::remove(file);
             out.debugmsg("Removed symlink " + file);
         }
