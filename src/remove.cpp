@@ -40,9 +40,9 @@ int8_t Pako::remove(std::vector<std::string> arguments) {
         out.debugmsg("listFilePath " + packageData[4]);
         out.msg("Preparing " + packageData[0] + ":" + packageData[1] + " (" + packageData[2] + ")");
         if(!force_remove)
-            if(!pkg.solveDeps(packageData[0]))
+            if(!pkg.solve_dependencies(packageData[0]))
                 return 2;
-        pkg.removePackageSource(packageData[4]);
+        pkg.remove_package_source(packageData[4]);
         std::filesystem::remove((string)VAR_PATH + "/control/" + arguments[i] + ".files");
         std::filesystem::remove((string)VAR_PATH + "/control/" + arguments[i] + ".info");
         if(std::filesystem::exists((string)VAR_PATH + "/control/" + arguments[i] + ".install"))

@@ -5,9 +5,9 @@ TMP_PATH    =      # On prefix
 
 CC          = gcc
 CXX         = g++
-CFLAGS      = -Ofast -static
-CXXFLAGS    = -O3 -static
-LDFLAGS     = -Ofast -static
+CFLAGS      = -Ofast
+CXXFLAGS    = -O3
+LDFLAGS     = -Ofast
 
 
 # Don't touch anything пожалуйста :P

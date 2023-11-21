@@ -21,11 +21,11 @@
 using std::string, std::cin, std::to_string, std::vector, std::exception, std::fstream, std::exception, std::ios;
 namespace fs = std::filesystem;
 
-extern int8_t remove(std::vector<std::string> args);
+extern int8_t remove(std::vector<std::string> arguments);
 
-std::string packageData[3];
+std::string package_data[3];
 
-int8_t Pako::install(const std::vector<std::string> args) {
+int8_t Pako::install(const std::vector<std::string> arguments) {
     #if NOSU == 0
     if(geteuid() != 0) {
         out.errormsg("Action requires superuser privileges.");
@@ -33,40 +33,40 @@ int8_t Pako::install(const std::vector<std::string> args) {
     }
     #endif
     // Проверка на обычный файл
-    for(const auto &file : args)
+    for(const auto &file : arguments)
         if(!fs::is_regular_file(file)) {
             out.errormsg(file + " is not a file.");
             return 1;
         }
     // Создание временных папок с содержимым распаковываемых файлов
-    for(size_t i=0; i<args.size(); i++)
-        if(!pkg.mkTemp((string)"package" + to_string(i)))
+    for(size_t i=0; i<arguments.size(); i++)
+        if(!pkg.make_tmp((string)"package" + to_string(i)))
             return 2;
     // Распаковка и проверка контрольного файла
-    for(size_t i=0; i<args.size(); i++) {
-        string packageData[3];
-        if(!pkg.unpack(args[i], (string)TMP_PATH + "/package" + to_string(i))) {
-            out.errormsg("Can't extract package file:" + args[i] + ".");
+    for(size_t i=0; i<arguments.size(); i++) {
+        string package_data[3];
+        if(!pkg.unpack_package_archive(arguments[i], (string)TMP_PATH + "/package" + to_string(i))) {
+            out.errormsg("Can't extract package file:" + arguments[i] + ".");
             return 3;
         }
         if(!fs::is_directory((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO") ||
            !fs::is_directory((string)TMP_PATH + "/package" + to_string(i) + "/package/source") ||
            !fs::is_regular_file((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info")  ||
            !fs::is_regular_file((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/files") ||
-           !pkg.readPackageData((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", packageData)) {
-            out.errormsg("Can't process " + args[i] + ": not a pako package.");
+           !pkg.read_package_data((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", package_data)) {
+            out.errormsg("Can't process " + arguments[i] + ": not a pako package.");
             return 4;
         }
     }
-    for(size_t i=0; i<args.size(); i++) {
-        string packageData[3];
-        pkg.readPackageData((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", packageData);
-        if(db.isInDatabase(packageData[0])) {
-            out.msg("Reinstalling " + packageData[0] + "...");
-            remove({packageData[0], "--force-remove"});
+    for(size_t i=0; i<arguments.size(); i++) {
+        string package_data[3];
+        pkg.read_package_data((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", package_data);
+        if(db.isInDatabase(package_data[0])) {
+            out.msg("Reinstalling " + package_data[0] + "...");
+            remove({package_data[0], "--force-remove"});
         }
-        if(!pkg.checkArch(packageData[1])) {
-            out.msg("Incompatible architecture detected for " + packageData[0] + ": " + packageData[1] + "\nContinue? [y/N] ");
+        if(!pkg.check_architecture(package_data[1])) {
+            out.msg("Incompatible architecture detected for " + package_data[0] + ": " + package_data[1] + "\nContinue? [y/N] ");
             string ans;
             cin >> ans;
             if(!(ans == "y" || ans == "yes" || ans == "Y" || ans == "YES")) {
@@ -75,20 +75,20 @@ int8_t Pako::install(const std::vector<std::string> args) {
             }
         }
         
-        if(!pkg.checkDeps((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info") ||
-           !pkg.checkConflicts((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info"))
+        if(!pkg.check_dependencies((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info") ||
+           !pkg.check_conflicts((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info"))
            return 6;
     }
     /* Копируем контрольные файлы в VAR_PATH */
-    for(size_t i=0; i<args.size(); i++) {
-		string packageData[3];
-        pkg.readPackageData((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", packageData);
+    for(size_t i=0; i<arguments.size(); i++) {
+		string package_data[3];
+        pkg.read_package_data((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", package_data);
 
 		try {
 			for (const auto& entry : fs::recursive_directory_iterator((string)TMP_PATH + "/package" + std::to_string(i) + "/package/PAKO")) {
 				if(entry.path().filename() == "files")
 					continue;
-				fs::copy(entry.path(), (string)VAR_PATH + "/control/" + packageData[0] + "." + entry.path().filename().string(), fs::copy_options::overwrite_existing);
+				fs::copy(entry.path(), (string)VAR_PATH + "/control/" + package_data[0] + "." + entry.path().filename().string(), fs::copy_options::overwrite_existing);
 			}
 		}
 		catch(const exception& e) {
@@ -96,16 +96,16 @@ int8_t Pako::install(const std::vector<std::string> args) {
 			out.debugmsg("CopyControlFiles:" + (string)e.what());
 			return 7;
 		}
-        out.msg("Installing " + packageData[0] + ":" + packageData[1] + " " + "(" + packageData[2] + ")");
-		if(fs::exists((string)VAR_PATH +"/control/" + packageData[0] + ".install"))
-			system(("sh " + (string)VAR_PATH +"/control/" + packageData[0] + ".install" + " --preinst").c_str());
+        out.msg("Installing " + package_data[0] + ":" + package_data[1] + " " + "(" + package_data[2] + ")");
+		if(fs::exists((string)VAR_PATH +"/control/" + package_data[0] + ".install"))
+			system(("sh " + (string)VAR_PATH +"/control/" + package_data[0] + ".install" + " --preinst").c_str());
 	}
 
 	// Копируем содержимое всех распакованных пакетов в префикс
-	for (size_t i = 0; i < args.size(); i++) {
-        string packageData[3];
-        pkg.readPackageData((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", packageData);
-        fstream filesList((string)VAR_PATH + "/control/" + packageData[0] + ".files", ios::app);
+	for (size_t i = 0; i < arguments.size(); i++) {
+        string package_data[3];
+        pkg.read_package_data((string)TMP_PATH + "/package" + to_string(i) + "/package/PAKO/info", package_data);
+        fstream filesList((string)VAR_PATH + "/control/" + package_data[0] + ".files", ios::app);
         for (const auto& entry : fs::recursive_directory_iterator((string)TMP_PATH + "/package" + to_string(i) + "/package/source")) {
             out.debugmsg(((string)TMP_PATH + "/package" + to_string(i) + "/package/source"));
             string path = entry.path().string().substr(((string)TMP_PATH + "/package" + to_string(i) + "/package/source").size());
@@ -138,14 +138,14 @@ int8_t Pako::install(const std::vector<std::string> args) {
             }
         }
         filesList.close();
-        out.debugmsg("Adding " + packageData[0] + " to database...");
-        if(!db.addPackage(packageData, (string)VAR_PATH + "/control/" + packageData[0] + ".info", (string)VAR_PATH + "/control/" + packageData[0] + ".files")) {
-            out.errormsg("can't add " + packageData[0] + " to database");
+        out.debugmsg("Adding " + package_data[0] + " to database...");
+        if(!db.addPackage(package_data, (string)VAR_PATH + "/control/" + package_data[0] + ".info", (string)VAR_PATH + "/control/" + package_data[0] + ".files")) {
+            out.errormsg("can't add " + package_data[0] + " to database");
             return 10;
         }
-        if(fs::exists((string)VAR_PATH +"/packages/" + packageData[0] + "/install"))
-            system(("sh " + (string)VAR_PATH +"/packages/" + packageData[0] + "/install" + " --postinst").c_str());
+        if(fs::exists((string)VAR_PATH +"/packages/" + package_data[0] + "/install"))
+            system(("sh " + (string)VAR_PATH +"/packages/" + package_data[0] + "/install" + " --postinst").c_str());
     }
-    pkg.clearTemp();
+    pkg.clear_tmp();
     return 0;
 }

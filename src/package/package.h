@@ -11,15 +11,15 @@ private:
     Print out;
     Database db;
 public:
-    bool mkTemp(std::string path);
-    bool clearTemp();
-    bool unpack(std::string source, std::string destination);
-    bool readPackageData(std::string dataFilePath, std::string packageData[3]);
-    bool checkDeps(std::string dataFilePath);
-    bool checkConflicts(std::string dataFilePath);
-    bool checkArch(std::string packageArch);
-    void removePackageSource(std::string listFilePath);
-    bool solveDeps(std::string packageName);
+    bool make_tmp(std::string path);
+    bool clear_tmp();
+    bool unpack_package_archive(std::string source, std::string destination);
+    bool read_package_data(std::string dataFilePath, std::string package_data[3]);
+    bool check_dependencies(std::string data_file_path);
+    bool check_conflicts(std::string data_file_path);
+    bool check_architecture(std::string package_arch);
+    void remove_package_source(std::string list_file_path);
+    bool solve_dependencies(std::string package_name);
 };
 
 #endif

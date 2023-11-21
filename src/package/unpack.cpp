@@ -5,7 +5,7 @@
 
 #include "package.h"
 
-bool Package::unpack(std::string source, std::string destination) {
+bool Package::unpack_package_archive(std::string source, std::string destination) {
 struct archive* a = archive_read_new();
 struct archive_entry* entry;
 

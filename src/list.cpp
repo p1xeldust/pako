@@ -15,11 +15,11 @@ int8_t Pako::list(std::vector<std::string> arguments) {
                 if(db.isInDatabase(arguments[i])) {
 
 		    out.debugmsg("Found package in " + arguments[i]);
-                    string* packageInfo = db.readDBPackageData(arguments[i]);
+                    string* package_data = db.readDBPackageData(arguments[i]);
                     cout << left
-                         << packageInfo[0] << setw(24-packageInfo[0].length()) << ""
-                         << packageInfo[1] << setw(10-packageInfo[1].length()) << ""
-                         << packageInfo[2] << setw(10-packageInfo[2].length()) << ""
+                         << package_data[0] << setw(24-package_data[0].length()) << ""
+                         << package_data[1] << setw(10-package_data[1].length()) << ""
+                         << package_data[2] << setw(10-package_data[2].length()) << ""
                          << endl;
                 } else {
                     out.debugmsg("Not found package in " + arguments[i]);
@@ -31,18 +31,18 @@ int8_t Pako::list(std::vector<std::string> arguments) {
                  }
             }
     } else {
-        std::string packageInfo[3];
+        std::string package_data[3];
         sqlite3* db;
         sqlite3_open(((std::string)VAR_PATH + "/packages.db").c_str(), &db);
         sqlite3_stmt* stmt;
         sqlite3_prepare_v2(db, "SELECT * FROM packages", -1, &stmt, 0);
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             for(uint8_t i=0; i<3; i++)
-                packageInfo[i] = (std::string)reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
+                package_data[i] = (std::string)reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
                 cout << left
-                         << packageInfo[0] << setw(24-packageInfo[0].length()) << ""
-                         << packageInfo[1] << setw(10-packageInfo[1].length()) << ""
-                         << packageInfo[2] << setw(10-packageInfo[2].length()) << ""
+                         << package_data[0] << setw(24-package_data[0].length()) << ""
+                         << package_data[1] << setw(10-package_data[1].length()) << ""
+                         << package_data[2] << setw(10-package_data[2].length()) << ""
                          << endl;
         }
         sqlite3_finalize(stmt);
