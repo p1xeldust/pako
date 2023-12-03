@@ -1,11 +1,10 @@
 #include <archive.h>
 #include <archive_entry.h>
-
 #include <string>
 
 #include "package.h"
 
-bool Package::unpack_package_archive(std::string source, std::string destination) {
+bool unpack_package_archive(std::string source, std::string destination) {
 struct archive* a = archive_read_new();
 struct archive_entry* entry;
 
@@ -14,7 +13,7 @@ archive_read_support_format_tar(a);
 
         if(archive_read_open_filename(a, source.c_str(), 10240) != 0) {
                 archive_read_free(a);
-                out.errormsg("Can't extract " + ((std::filesystem::path)source).filename().string() + ": It's a broken package.");
+                errormsg(("Can't extract " + ((std::filesystem::path)source).filename().string() + ": It's a broken package.").c_str());
                 return false;
         }
 
