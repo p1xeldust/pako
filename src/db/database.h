@@ -1,19 +1,22 @@
 #include <sqlite3.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "../output/print.h"
+
 #ifndef DATABASE_H
 #define DATABASE_H
 
-class Database {
-    sqlite3 *db;
-    Print out;
-public:
+#ifdef __cplusplus
+extern "C" {
+#endif
     bool initDatabase();
-    bool addPackage(std::string packageData[3], std::string listPath, std::string infoPath);
-    bool isInDatabase(std::string packageName);
-    bool removePackage(std::string packageName);
-    std::string * readDBPackageData(std::string packageName);
-};
-
+    bool addPackageToDatabase(const char* packageName, const char* packageArch, const char* packageVersion, const char* listPath, const char* infoPath);
+    bool isInDatabase(const char* packageName);
+    bool removePackageFromDatabase(const char* packageName);
+    bool readDBPackageData(const char* packageName, char* packageData[5]);
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -6,15 +6,19 @@
 
 #include "package.h"
 
-bool Package::solve_dependencies(std::string packageName) {
+bool solve_dependencies(std::string packageName) {
     std::vector<std::string> dependencies;
     sqlite3* db; sqlite3_stmt* stmt;
     if (sqlite3_open(((std::string)VAR_PATH + "/packages.db").c_str(), &db)) {
-        out.debugmsg("solveDeps: Can't open database: " + (std::string)sqlite3_errmsg(db));
+        #ifdef DEBUG
+        debugmsg(("solveDeps: Can't open database: " + (std::string)sqlite3_errmsg(db)).c_str());
+        #endif
         return 0;
     }
     if (sqlite3_prepare_v2(db, "SELECT * FROM packages;", -1, &stmt, 0) != SQLITE_OK) {
-        out.debugmsg("solveDeps: SQL error: " + (std::string)sqlite3_errmsg(db));
+        #ifdef DEBUG
+        debugmsg(("solveDeps: SQL error: " + (std::string)sqlite3_errmsg(db)).c_str());
+        #endif
         sqlite3_close(db);
         return 0;
     }
@@ -22,8 +26,10 @@ bool Package::solve_dependencies(std::string packageName) {
         if(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)) == ((std::string)VAR_PATH + "/control/" + packageName + ".info").c_str())
             continue;
         std::string diffPackagesInfoFile = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
-        out.debugmsg("SolveDeps: diffPackagesInfoFile: " + diffPackagesInfoFile);
-        out.debugmsg("SolveDeps: curInfoFile: " + (std::string)VAR_PATH + "/control/" + packageName + ".info");
+        #ifdef DEBUG
+        debugmsg(("SolveDeps: diffPackagesInfoFile: " + diffPackagesInfoFile).c_str());
+        debugmsg(("SolveDeps: curInfoFile: " + (std::string)VAR_PATH + "/control/" + packageName + ".info").c_str());
+        #endif
         std::ifstream dataFile(diffPackagesInfoFile, std::ios::in);
         for(std::string line; getline(dataFile, line); dataFile.good()) {
             if(line.find("deps:") != std::string::npos) {
@@ -35,13 +41,15 @@ bool Package::solve_dependencies(std::string packageName) {
           }
     }
     if(dependencies.size() <= 0) {
-        out.debugmsg("SolveDeps: solved deps!");
+        #ifdef DEBUG
+        debugmsg("SolveDeps: solved deps!");
+        #endif
         return true;
     } else {
-        out.errormsg("Unable to solve dependencies:");
+        errormsg("Unable to solve dependencies:");
         for(size_t i=0; i < dependencies.size(); i++)
-            out.msg("Package '" + dependencies[i] + "' depends on " + packageName);
-        out.msg("Use --force-remove to avoid this check.");
+            msg(("Package '" + dependencies[i] + "' depends on " + packageName).c_str());
+        msg("Use --force-remove to avoid this check.");
         return false;
     }
     sqlite3_close(db);
@@ -49,36 +57,44 @@ bool Package::solve_dependencies(std::string packageName) {
 }
 
 
-void Package::remove_package_source(std::string listFilePath) {
+void remove_package_source(std::string listFilePath) {
     std::vector<std::string> files;
     std::ifstream listFile(listFilePath);
     for(std::string line; getline(listFile, line); listFile.good()) {
         files.push_back((std::string)PREFIX + "/" + line);
-        //out.debugmsg(" Added " + (std::string)PREFIX + "/" + line + " to remove list");
+        //debugmsg((" Added " + (std::string)PREFIX + "/" + line + " to remove list").c_str());
     }
     /* Удаление файлов */
     for(const auto file : files) {
         if(std::filesystem::is_regular_file(file)) {
             std::filesystem::remove(file);
-            out.debugmsg("Removed file " + file);
+            #ifdef DEBUG
+            debugmsg(("Removed file " + file).c_str());
+            #endif
         }
     }
-    for(const auto file : files) {
-        if(std::filesystem::is_directory(file) && std::filesystem::is_empty(file)) {
-            std::filesystem::remove(file);
-            out.debugmsg("Removed directory " + file);
+    for(const auto directory : files) {
+        if(std::filesystem::is_directory(directory) && std::filesystem::is_empty(directory)) {
+            std::filesystem::remove(directory);
+            #ifdef DEBUG
+            debugmsg(("Removed directory " + directory).c_str());
+            #endif
         }
     }
     for(const auto file : files) {
         if(std::filesystem::is_symlink(file)) {
             std::filesystem::remove(file);
-            out.debugmsg("Removed symlink " + file);
+            #ifdef DEBUG
+            debugmsg(("Removed symlink " + file).c_str());
+            #endif
         }
     }
     for(const auto file : files) {
         if(std::filesystem::is_symlink(file) && !std::filesystem::exists(std::filesystem::read_symlink(file))) {
             std::filesystem::remove(file);
-            out.debugmsg("Removed symlink " + file);
+            #ifdef DEBUG
+            debugmsg(("Removed dead symlink " + file).c_str());
+            #endif
         }
     }
 }

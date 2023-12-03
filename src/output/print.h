@@ -1,14 +1,14 @@
-#include <string.h>
-
 #ifndef PRINT_H
 #define PRINT_H
 
-class Print {
-public:
-    void errormsg(std::string message);
-    void debugmsg(std::string message);
-    void msg(std::string message);
-
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
+    void errormsg(const char* message_format, ...);
+    void debugmsg(const char* format, ...);
+    void msg(const char* message_format, ...);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

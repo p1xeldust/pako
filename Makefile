@@ -5,8 +5,8 @@ TMP_PATH    =      # On prefix
 
 CC          = gcc
 CXX         = g++
-CFLAGS      = -Ofast
-CXXFLAGS    = -O3
+CFLAGS      = -Ofast -DDEBUG
+CXXFLAGS    = -O3 -DDEBUG
 LDFLAGS     = -Ofast
 
 

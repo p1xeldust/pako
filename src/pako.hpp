@@ -1,5 +1,3 @@
-#include <vector>
-#include <string>
 #include "db/database.h"
 #include "output/print.h"
 #include "package/package.h"
@@ -7,17 +5,20 @@
 #ifndef PAKO_H
 #define PAKO_H
 
-class Pako {
-private:
-    Package pkg;
-    Print out;
-    Database db;
-public:
-    int8_t install(std::vector<std::string> arguments);
-    int8_t remove(std::vector<std::string> arguments);
-    int8_t list(std::vector<std::string> arguments);
+#ifdef __cplusplus
+#include <vector>
+#include <string>
+
+int8_t installPackage(std::vector<std::string> arguments);
+int8_t removePackage(std::vector<std::string> arguments);
+int8_t listPackages(std::vector<std::string> arguments);
+
+extern "C" {
+#endif
     void help();
     void version();
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -8,27 +8,30 @@
 
 using namespace std;
 
-int8_t Pako::list(std::vector<std::string> arguments) {
+int8_t listPackages(std::vector<std::string> arguments) {
     cout << "Name" << setw(20) << "" << "arch" << setw(6) << "" << "Version" << endl << endl;
     if(arguments.size() > 0) {
             for(size_t i=0; i<arguments.size(); i++) {
-                if(db.isInDatabase(arguments[i])) {
-
-		    out.debugmsg("Found package in " + arguments[i]);
-                    string* package_data = db.readDBPackageData(arguments[i]);
+                if(isInDatabase(arguments[i].c_str())) {
+                    #ifdef DEBUG
+		            debugmsg("Package %s is installed.\n",arguments[i]);
+                    #endif
+                    char** package_data = readDBPackageData(arguments[i].c_str());
                     cout << left
-                         << package_data[0] << setw(24-package_data[0].length()) << ""
-                         << package_data[1] << setw(10-package_data[1].length()) << ""
-                         << package_data[2] << setw(10-package_data[2].length()) << ""
+                         << package_data[0] << setw(24-sizeof(package_data[0])) << ""
+                         << package_data[1] << setw(10-sizeof(package_data[1])) << ""
+                         << package_data[2] << setw(10-sizeof(package_data[2])) << ""
                          << endl;
                 } else {
-                    out.debugmsg("Not found package in " + arguments[i]);
+                    #ifdef DEBUG
+                    debugmsg("Package %s is not installed",arguments[i].c_str());
+                    #endif
                     cout << left
                          << arguments[i] << setw(24-arguments[i].length()) << ""
                          << "unknown" << setw(3) << ""
                          << "unknown" << setw(3) << ""
                          << endl;
-                 }
+                }
             }
     } else {
         std::string package_data[3];
