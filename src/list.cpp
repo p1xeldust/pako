@@ -16,7 +16,8 @@ int8_t listPackages(std::vector<std::string> arguments) {
                     #ifdef DEBUG
 		            debugmsg("Package %s is installed.\n",arguments[i]);
                     #endif
-                    char** package_data = readDBPackageData(arguments[i].c_str());
+                    char* package_data[5];
+                    readDBPackageData(arguments[i].c_str(), package_data);
                     cout << left
                          << package_data[0] << setw(24-sizeof(package_data[0])) << ""
                          << package_data[1] << setw(10-sizeof(package_data[1])) << ""
