@@ -46,11 +46,11 @@ COBJ        = $(CSOURCES:.c=.o)
 BIN         = pako
 all: $(COBJ) $(CXXOBJ)
 	@echo "  CXXLD  $(BIN)"
-	@$(CXX) $(CFLAGS) $(CXXFLAGS) -o $(BIN) $^ $(CMLIBS)
+	@$(CXX) $(CXXFLAGS) $(CXXFLAGS) -o $(BIN) $^ $(CMLIBS)
 
 %.o: %.c
 	@echo "  CC     $< -> $@"
-	@$(CC) $(CXXFLAGS) $(CXXCMFLAGS) $(CVARIABLES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(CVARIABLES) -c $< -o $@
 
 %.o: %.cpp
 	@echo "  CXX    $< -> $@"
@@ -58,9 +58,9 @@ all: $(COBJ) $(CXXOBJ)
 
 clean:
 	@echo "Cleaning up..."
-	@rm -f $(COBJ) $(CXXOBJ) pako
+	@rm -f $(COBJ) $(CXXOBJ) $(BIN)
 
 install: all # Я не изверг, поэтому здесь есть DESTDIR
 	install -d ${DESTDIR}/usr/bin
-	install -m 755 pako ${DESTDIR}/usr/bin
+	install -m 755 $(BIN) ${DESTDIR}/usr/bin
 	install -m 755 scripts/pako-builder ${DESTDIR}/usr/bin
