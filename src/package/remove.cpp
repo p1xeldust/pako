@@ -39,6 +39,11 @@ int Pako::remove(vector<string> packages) {
             output.error("Cant get data from database\n");
             return 1;
         }
+        if(db.checkDepsOnRemove(package, packages) == -1) {
+            output.warn("Ignoring " + package.name);
+            continue;
+        }
+
         ifstream listFile(package.files.listFile);
         for(string line; getline(listFile, line);) {
             if(is_regular_file((string)PREFIX + "/" + line))

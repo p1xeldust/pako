@@ -12,6 +12,7 @@ public:
     int add(Package& package);
     int isIn(string packageName);
     int getData(string packageName, Package& package);
+    int checkDepsOnRemove(Package& package, vector<string> packageList);
     int remove(string PackageName);
 };
 

@@ -5,6 +5,7 @@
 */
 
 #include <filesystem>
+#include <sqlite3.h>
 #include <fstream>
 #include <string>
 #include <vector>

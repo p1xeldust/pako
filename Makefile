@@ -1,7 +1,7 @@
 # User variables
 PREFIX      = /opt
-VAR_PATH    =      # On prefix
-TMP_PATH    =      # On prefix
+VAR_PATH    = /var/lib/pako     # On prefix
+TMP_PATH    = /tmp
 
 CC          =
 CXX         =
@@ -37,9 +37,9 @@ endif
 
 VERSION	    = "dev"
 CMCXXFLAGS  = -std=c++17
-CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(PREFIX)/$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
+CVARIABLES  = -DPREFIX="\"$(PREFIX)/\"" -DVAR_PATH="\"$(PREFIX)/$(VAR_PATH)/\"" -DTMP_PATH="\"$(TMP_PATH)/\"" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
 CMLIBS      = -larchive -llzma -lsqlite3
-CXXSOURCES  =
+CXXSOURCES  = src/package/install.cpp src/package/unpack.cpp src/essential/tar.cpp src/essential/o.cpp src/package/parse.cpp src/package/clean.cpp src/package/specs.cpp src/package/arch.cpp src/package/dependencies.cpp src/db/read.cpp src/essential/dialog.cpp src/db/init.cpp src/package/copyByList.cpp src/db/add.cpp src/package/remove.cpp src/db/remove.cpp src/package/list.cpp src/main.cpp
 CSOURCES    =
 CXXOBJ      = $(CXXSOURCES:.cpp=.o)
 COBJ        = $(CSOURCES:.c=.o)
