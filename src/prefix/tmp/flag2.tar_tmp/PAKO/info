@@ -1,0 +1,7 @@
+name flag2
+version 0.1
+arch x86_64
+type 0
+dependencies flag
+conflicts
+description "Flag!"

@@ -3,8 +3,8 @@ PREFIX      = /opt
 VAR_PATH    =      # On prefix
 TMP_PATH    =      # On prefix
 
-CC          = gcc
-CXX         = g++
+CC          =
+CXX         =
 CFLAGS      = -Ofast -DDEBUG
 CXXFLAGS    = -O3 -DDEBUG
 LDFLAGS     = -Ofast
@@ -39,7 +39,7 @@ VERSION	    = "dev"
 CMCXXFLAGS  = -std=c++17
 CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(PREFIX)/$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
 CMLIBS      = -larchive -llzma -lsqlite3
-CXXSOURCES  = src/install.cpp src/list.cpp src/main.cpp src/output/version.cpp src/output/help.cpp src/output/print.cpp src/remove.cpp src/db/init.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/solver.cpp src/package/checks.cpp src/package/unpack.cpp src/package/temp.cpp src/package/read.cpp
+CXXSOURCES  =
 CSOURCES    =
 CXXOBJ      = $(CXXSOURCES:.cpp=.o)
 COBJ        = $(CSOURCES:.c=.o)
