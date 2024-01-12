@@ -9,6 +9,7 @@
 #include "../db/database.h"
 #include "copyByList.h"
 #include "package.h"
+#include "exec.h"
 #include "unpack.h"
 #include "clean.h"
 
@@ -17,7 +18,10 @@
 extern Output output;
 extern Database db;
 
-using std::string, std::cout, std::vector, std::ifstream, std::filesystem::path, std::filesystem::copy, std::filesystem::create_directories, std::filesystem::is_regular_file, std::remove;
+using std::string, std::cout, std::vector, std::ifstream, 
+        std::filesystem::path, std::filesystem::copy, 
+        std::filesystem::create_directories, std::filesystem::is_regular_file, 
+        std::remove, std::filesystem::exists;
 
 int Pako::install(vector<string> packagesAsFiles) {
     create_directories((string)VAR_PATH + "/control/");
@@ -45,13 +49,21 @@ int Pako::install(vector<string> packagesAsFiles) {
         }
 
         ifstream listFile(tmpPath + "/PAKO/files");
+        if(exists(tmpPath + "/PAKO/install"))
+            execScript(package.files.installScript, PRE_INSTALL);
         copyByList(tmpPath + "/sources", listFile, package);
         package.files.listFile = (string)VAR_PATH + "/control/" + package.name + ".files";
         package.files.specFile = (string)VAR_PATH + "/control/" + package.name + ".info";
+        package.files.installScript = (string)VAR_PATH + "/control/" + package.name + ".install";
+        if(exists(tmpPath + "/PAKO/install")) {
+            copy_file(tmpPath + "/PAKO/install", package.files.installScript, std::filesystem::copy_options::update_existing);
+        }
         db.add(package);
         copy_file(tmpPath + "/PAKO/info", package.files.specFile, std::filesystem::copy_options::update_existing);
         copy_file(tmpPath + "/PAKO/files", package.files.listFile, std::filesystem::copy_options::update_existing);
+
         output.msg("Installed " + package.name);
+        execScript(tmpPath + "/PAKO/install", POST_INSTALL);
         cleanUpInstall(path(packageFile).filename());
     }
 

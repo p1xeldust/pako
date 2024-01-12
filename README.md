@@ -5,16 +5,13 @@ Another package manager!
 [![Makefile CI](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml/badge.svg?branch=main)](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml)  
 
 :warning: STILL IN DEVELOPMENT :warning:
-Currently only these architectures supported:  
-**x86_64**, **i386**, **aarch64**, **arm**, **ppc**, **ppc64**, **mips**, **mipsel**
-
 
 ## Installation:
-For this you need a **c++ compiler compatible with c++17**, **libarchive**, **liblzma**, and **make**
+For this you need **a c++ compiler compatible with c++17**, **libarchive**, **liblzma**, **libsqlite3** and **make**
 
 Debian-like distributions:
 ```
-apt install git g++ make libarchive-dev liblzma-dev
+apt install git g++ make libarchive-dev liblzma-dev libsqlite3-dev
 ```
 Once you've installed your compiler properly, clone this repository:
 ```

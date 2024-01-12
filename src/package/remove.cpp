@@ -5,6 +5,7 @@
 #include <string>
 
 #include "package.h"
+#include "exec.h"
 
 #include "../db/database.h"
 extern Database db;
@@ -43,7 +44,8 @@ int Pako::remove(vector<string> packages) {
             output.warn("Ignoring " + package.name);
             continue;
         }
-
+        if(exists(package.files.installScript))
+            execScript(package.files.installScript, PRE_REMOVE);
         ifstream listFile(package.files.listFile);
         for(string line; getline(listFile, line);) {
             if(is_regular_file((string)PREFIX + "/" + line))
@@ -62,6 +64,10 @@ int Pako::remove(vector<string> packages) {
         listFile.close();
         std::filesystem::remove(package.files.listFile);
         std::filesystem::remove(package.files.specFile);
+        if(exists(package.files.installScript)) {
+            execScript(package.files.installScript, POST_REMOVE);
+            std::filesystem::remove(package.files.installScript);
+        }
         db.remove(package.name);
         output.msg("Removed " + package.name);
     }

@@ -77,6 +77,7 @@ int Database::getData(string packageName, Package& package)
         package.name = (char*)sqlite3_column_text(stmt, 0);
         package.files.specFile = (char*)sqlite3_column_text(stmt, 1);
         package.files.listFile = (char*)sqlite3_column_text(stmt, 2);
+        package.files.installScript = (char*)sqlite3_column_text(stmt, 3);
     }
     else if (step_result != SQLITE_DONE) {
         output.error("read.cpp:getData: Error selecting package from db. SQLite error: " + (string)sqlite3_errmsg(db));

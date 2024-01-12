@@ -27,6 +27,14 @@ enum PackageMeta
     META
 };
 
+enum PackageScriptModes {
+    PRE_INSTALL,
+    POST_INSTALL,
+    PRE_REMOVE,
+    POST_REMOVE,
+    RECONFIGURE
+};
+
 class Package {
 private:
     struct ArchData {
@@ -36,6 +44,7 @@ private:
     struct Files {
         string specFile;
         string listFile;
+        string installScript;
     };
 
 public:
