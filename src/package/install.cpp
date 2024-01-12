@@ -52,6 +52,7 @@ int Pako::install(vector<string> packagesAsFiles) {
         copy_file(tmpPath + "/PAKO/info", package.files.specFile, std::filesystem::copy_options::update_existing);
         copy_file(tmpPath + "/PAKO/files", package.files.listFile, std::filesystem::copy_options::update_existing);
         output.msg("Installed " + package.name);
+        cleanUpInstall(path(packageFile).filename());
     }
 
     return 1;

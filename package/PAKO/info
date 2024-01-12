@@ -1,5 +1,7 @@
-name: pkg_name
-version: pkg_version
-arch: pkg_arch
-deps: pkg_dep1 pkg_dep2
-conflicts: pkg_conf1 pkg_conf2
+name flag
+version 0.1
+arch x86_64
+type 0
+dependencies
+conflicts
+description "Flag!"
