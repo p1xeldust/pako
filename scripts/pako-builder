@@ -22,7 +22,8 @@ menu() {
 }
 
 while true; do
-menu
+echo "Obsolete"
+exit
 
 read -p "└#" choice
 
@@ -52,7 +53,7 @@ case $choice in
 			rm $packagename"_"$packageversion"_"$packagearch.pako
 		fi
 		mkdir -p package/{PAKO,source}
-		echo -e "name: $packagename\nversion: $packageversion\narch: $packagearch\ndeps: $dependencies\nconflicts: $conflicts" > package/PAKO/info
+		echo -e "name $packagename\nversion $packageversion\narch: $packagearch\ndeps: $dependencies\nconflicts: $conflicts" > package/PAKO/info
 cat >> package/PAKO/install << EOF
 if [ "\$1" = "--preinst" ]; then
 #Put your pre-installation script here!
