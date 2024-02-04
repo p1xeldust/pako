@@ -5,8 +5,8 @@
 # Compilation stuff
 CC          = 
 CXX         = 
-CXXFLAGS    = -Os -static -no-pie -pipe
-LDFLAGS     = -Ofast -static -no-pie -pipe
+CXXFLAGS    = -Os -no-pie -pipe
+LDFLAGS     = -Ofast -no-pie -pipe
 
 
 # Don't touch anything пожалуйста :P
