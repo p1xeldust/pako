@@ -1,29 +1,33 @@
-#include "essential/o.h"
+#include "common/dialog.h"
+#include "common/config.h"
+#include "common/output.h"
 #include "db/database.h"
-#include "pako.h"
 
-extern Database db;
-extern Output output;
-Pako pako;
+#include "package/install.h"
+
+Dialog dialog;
+Output output;
+Database db;
+ConfigParams configParams;
 
 int main(int argc, char** argv) {
-    vector<string> arguments;
+    configParams.ReadConfigFile("pako.conf");
+    std::vector<std::string> arguments;
     if(argc < 2) {
         output.msg("No help now, sorry!");
         return 1;
     }
-    string action = argv[1];
-    db.init();
+    std::string action = argv[1];
 
     for(int i = 2; i<argc; i++) {
         arguments.push_back(argv[i]);
     }
     if(action == "-i")
-        pako.install(arguments);
+        Install(arguments);
     else if(action == "-l")
-        pako.list(arguments);
+        List(arguments);
     else if(action == "-r")
-        pako.remove(arguments);
+        Remove(arguments);
     else
         output.msg("No help now, sorry!");
 }

@@ -1,33 +1,9 @@
-/*
-    Package structures and classes
-    Written by Paul Goldstein, Jan 2024.
-
-*/
-
 #ifndef PAKO_PACKAGE_H
 #define PAKO_PACKAGE_H
-
-#include <linux/limits.h>
-#include <vector>
 #include <string>
+#include <vector>
 
-using std::string, std::vector;
-
-enum ArchMeta
-{
-    ARCH_NATIVE,
-    ARCH_FOREIGN,
-    ARCH_NONE
-};
-
-enum PackageMeta
-{
-    DEFAULT,
-    RIDICULOUS,
-    META
-};
-
-enum PackageScriptModes {
+enum execMode {
     PRE_INSTALL,
     POST_INSTALL,
     PRE_REMOVE,
@@ -35,27 +11,40 @@ enum PackageScriptModes {
     RECONFIGURE
 };
 
-class Package {
-private:
-    struct ArchData {
-        string name;
-        enum ArchMeta meta;
-    };
-    struct Files {
-        string specFile;
-        string listFile;
-        string installScript;
-    };
+enum packageMetaType {
+    PACKAGE_DEFAULT, 
+    PACKAGE_META,
+    PACKAGE_RIDICULOUS
+};
 
-public:
-    string name;
-    string version;
-    string description;
-    PackageMeta meta;
-    ArchData arch;
-    Files files;
-    vector<string> dependencies;
-    vector<string> conflicts;
+enum architectureMetaType {
+    ARCH_NATIVE,
+    ARCH_FOREIGN,
+    ARCH_NONE
+};
+
+class Package {
+    private:
+        struct architectureType {
+            std::string name;
+            enum architectureMetaType meta;
+        };
+
+        struct packageFiles {
+            std::string scriptFilePath = "";
+            std::string listFilePath = "";
+        };
+
+    public:
+        bool skipcurrent = 0;
+        std::string name;
+        std::string version;
+        enum packageMetaType meta;
+        architectureType arch;
+        std::vector<std::string> dependencies;
+        std::vector<std::string> conflicts;
+        std::string description;
+        packageFiles files;
 };
 
 #endif

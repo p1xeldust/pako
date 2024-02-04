@@ -3,58 +3,64 @@
     Written by Paul Goldstein, Jan 2024
 */
 
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "../essential/o.h"
+#include "../common/output.h"
 #include "package.h"
 #include "specs.h"
 
 extern Output output;
 
-using std::ifstream, std::find, std::getline, std::vector, std::stoi, std::istringstream;
+Package ParseSpecs(std::filesystem::path specFilePath)
+{
+    Package package;
+    std::ifstream specFile(specFilePath);
 
-int parseSpecs(string specFilePath, Package& package) {
-    ifstream specFile(specFilePath);
-
-    if (!specFile) {
-        output.error("parse.cpp: spec file not found");
-        return -1;
+    if (!specFile)
+    {
+        output.error("parse.cpp: spec file not found, skipping.");
+        package.skipcurrent = 1;
+        return package;
     }
-    for (string line; getline(specFile, line);) {
-        string type = line.substr(0, line.find(" ")), value = line.substr(line.find(" ")+1);
-        if (type == "name")
+    for (std::string line; std::getline(specFile, line);)
+    {
+        std::stringstream ss(line);
+        std::string type, value;
+        ss >> type;
+        std::getline(ss >> std::ws, value);
+        if (type == "name" && !value.empty())
             package.name = value;
-        else if (type == "version")
+        else if (type == "version" && !value.empty())
             package.version = value;
-        else if (type == "arch")
+        else if (type == "arch" && !value.empty())
             package.arch.name = value;
-        else if (type == "type")
-            package.meta = static_cast<PackageMeta>(stoi(value));
-        else if (type == "dependencies") {
-            istringstream dependencies(value);
-            string dependency;
-            while (dependencies >> dependency) {
-                if(dependency == "dependencies")
-                    continue;
+        else if (type == "type" && !value.empty())
+            package.meta = static_cast<packageMetaType>(stoi(value));
+        else if (type == "dependencies" && !value.empty())
+        {
+            std::stringstream dependencies(value);
+            for (std::string dependency; dependencies >> dependency;)
                 package.dependencies.push_back(dependency);
-            }
         }
-        else if (type == "conflicts") {
-            istringstream conflicts(value);
-            string conflict;
-            while (conflicts >> conflict) {
-                if(conflict == "conflicts")
-                    continue;
+        else if (type == "conflicts" && !value.empty())
+        {
+            std::stringstream conflicts(value);
+            for (std::string conflict; conflicts >> conflict;)
                 package.conflicts.push_back(conflict);
-            }
         }
-        else if (type == "description") {
+        else if (type == "description" && !value.empty())
             package.description = value;
-        }
+        else if (type == "listfile" && !value.empty())
+            package.files.listFilePath = value;
+        else if (type == "scriptfile" && !value.empty())
+            package.files.scriptFilePath = value;
+        else
+            continue;
     }
     return checkSpecs(package);
 }

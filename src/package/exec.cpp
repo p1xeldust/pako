@@ -1,18 +1,17 @@
+#include <filesystem>
 #include <unistd.h>
 
 #include "package.h"
 
-int execScript(string installScript, int mode) {
+int execScript(std::filesystem::path installScriptPath, enum execMode mode) {
     switch (mode)
     {
     case PRE_INSTALL:
-        return execlp(installScript.c_str(), "preinstall");
+        return execlp(installScriptPath.c_str(), "--preinst");
     case POST_INSTALL:
-        return execlp(installScript.c_str(), "postinstall");
+        return execlp(installScriptPath.c_str(), "--postinst");
     case PRE_REMOVE:
-        return execlp(installScript.c_str(), "preremove");
-    case POST_REMOVE:
-        return execlp(installScript.c_str(), "postremove");
+        return execlp(installScriptPath.c_str(), "--preremove");
     default:
         break;
     }

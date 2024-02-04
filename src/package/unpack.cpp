@@ -1,18 +1,15 @@
-/*
-    Package file unpack function
-    Written by Paul Goldstein, Jan 2024
-*/
 #include <filesystem>
-#include <string>
 
-#include "../essential/tar.h"
+#include "package.h"
+
+#include "../common/config.h"
+#include "../common/tar.h"
 #include "parse.h"
 
-
-using std::string, std::filesystem::path;
-
-int unpackPackage(string packageFile, Package& package, string tmpPath) {
-    if (extract_tar(packageFile, tmpPath) == -1)
+int unpackPackage(std::filesystem::path packageFile) {
+    std::filesystem::path currentTmpPath = configParams.tmpPath / (packageFile.filename().string() + "_tmp");
+    std::filesystem::create_directories(currentTmpPath);
+    if (extractTar(packageFile, currentTmpPath) == -1)
         return -1;
-    return parseSpecs(tmpPath + "/PAKO/info", package);
+    return 0;
 }

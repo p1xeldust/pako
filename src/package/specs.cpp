@@ -1,23 +1,25 @@
+
+#include "../common/output.h"
+#include "architecture.h"
 #include "package.h"
-#include "arch.h"
 
-#include "../essential/o.h"
-extern Output output;
-
-int checkSpecs(class Package& package) {
+Package checkSpecs(class Package& package) {
     if (!package.name.length()) {
-        output.error("specs_check.cpp: Incorrect package name. Stopping.");
-        return -1;
+        output.error("specs_check.cpp: Incorrect package name, skipping.");
+        package.skipcurrent = 1;
+        return package;
     }
 
     if (!package.version.length()) {
-        output.error("specs_check.cpp: Incorrect version. Stopping.");
-        return -1;
+        output.error("specs_check.cpp: Incorrect version, skipping.");
+        package.skipcurrent = 1;
+        return package;
     }
 
     if (!package.arch.name.length()) {
-        output.error("specs_check.cpp: Incorrect arch. Stopping.");
-        return -1;
+        output.error("specs_check.cpp: Incorrect arch, skipping.");
+        package.skipcurrent = 1;
+        return package;
     }
-    return checkArch(package);
+    return CheckArchitecture(package);
 }

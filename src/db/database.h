@@ -1,19 +1,26 @@
-#ifndef PAKO_DATABASE_H
-#define PAKO_DATABASE_H
+#ifndef PAKO_DB_H
+#define PAKO_DB_H
 
-#include <string>
+#include "../common/config.h"
 #include "../package/package.h"
 
-class Database {
-private:
-    string dbPath = (string)VAR_PATH + "/packages.db";
+class Database
+{
 public:
-    void init();
-    int add(Package& package);
-    int isIn(string packageName);
-    int getData(string packageName, Package& package);
-    int checkDepsOnRemove(Package& package, vector<string> packageList);
-    int remove(string PackageName);
+    void AddPackage(Package &package);
+    Package GetPackage(std::string packageName);
+    bool IsIn(std::string packageName);
+    void RemovePackage(Package &package);
+
+    bool IsIn(Package &package)
+    {
+        return IsIn(package.name);
+    }
+
+    Package GetPackage(Package &package)
+    {
+        return GetPackage(package.name);
+    }
 };
 
 extern Database db;

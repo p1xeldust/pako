@@ -1,9 +1,9 @@
-#ifndef PAKO_DEPENDENCIES_H
-#define PAKO_DEPENDENCIES_H
+#ifndef PAKO_DEPS_H
+#define PAKO_DEPS_H
 
 #include "package.h"
 
-int CheckDeps(Package& package);
-int CheckConflicts(Package& package);
+Package CheckDependencies(Package& package);
+Package CheckConflicts(Package& package);
 
 #endif

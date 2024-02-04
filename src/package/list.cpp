@@ -2,22 +2,19 @@
 #include <string>
 #include <vector>
 
+#include "../common/config.h"
+#include "../common/output.h"
 #include "../db/database.h"
-
-#include "../essential/o.h"
-extern Output output;
-
-#include "../pako.h"
 
 using std::vector, std::string, std::cout;
 
-int Pako::list(vector<string> packages) {
+int List(vector<string> packages) {
     auto it = packages.begin();
 
     while (it != packages.end()) {
         const auto& packageit = *it;
 
-        if (!db.isIn(packageit)) {
+        if (!db.IsIn(packageit)) {
             output.warn(packageit + " is not installed, skipping.");
             it = packages.erase(it);
         }
@@ -26,8 +23,7 @@ int Pako::list(vector<string> packages) {
         }
     }
     for(const auto& packageit : packages) {
-        Package package;
-        db.getData(packageit, package);
+        Package package = db.GetPackage(packageit);
         cout << package.name << " " << package.version << " " << package.arch.name << " " << package.description << "\n";
     }
     return 0;

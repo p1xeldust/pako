@@ -1,8 +1,4 @@
-# User variables
-PREFIX      = /opt
-VAR_PATH    = /var/lib/pako     # On prefix
-TMP_PATH    = /tmp
-
+# Compilation stuff
 CC          = 
 CXX         =
 CXXFLAGS    = -pipe -s -UNDEBUG -fno-ident -feliminate-unused-debug-types -feliminate-unused-debug-symbols -fno-dwarf2-cfi-asm -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-debug-cpp -fno-debug-types-section -gno-record-gcc-switches -gno-column-info -gno-statement-frontiers -gno-variable-location-views -gno-internal-reset-location-views -gno-inline-points -fno-rtti -gno-pubnames -fsplit-paths -fdce -fdse -fallocation-dce -ftree-builtin-call-dce -ftree-dce -ftree-dse -fno-semantic-interposition -fgraphite-identity -floop-nest-optimize -floop-interchange -fno-plt -Ofast -flto -fipa-pta -fdevirtualize-at-ltrans -fwhole-program -fno-exceptions -static
@@ -12,33 +8,20 @@ LDFLAGS     = -Ofast
 # Don't touch anything пожалуйста :P
 
 # Setting default variables if some of them are undefined
-ifeq ($(PREFIX),)
-PREFIX      = /opt
-endif
-ifeq ($(VAR_PATH),)
-VAR_PATH    = /var/lib/pako
-endif
-ifeq ($(TMP_PATH),)
-TMP_PATH    = /tmp/pako
-endif
-ifeq ($(DEMO),)
-DEMO  = 0
-endif
 ifeq ($(CC),)
-CC          = gcc
+CC          = cc
 endif
 ifeq ($(CXX),)
-CXX         = g++
+CXX         = c++
 endif
 ifneq ($(NOSU),1)
 NOSU        = 0
 endif
 
-VERSION	    = "dev"
+VERSION	    = "0.0.2"
 CMCXXFLAGS  = -std=c++17
-CVARIABLES  = -DPREFIX="\"$(PREFIX)/\"" -DVAR_PATH="\"$(PREFIX)/$(VAR_PATH)/\"" -DTMP_PATH="\"$(TMP_PATH)/\"" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
-CMLIBS      = -larchive -llzma -lsqlite3
-CXXSOURCES  = src/package/install.cpp src/package/exec.cpp src/package/unpack.cpp src/essential/tar.cpp src/essential/o.cpp src/package/parse.cpp src/package/clean.cpp src/package/specs.cpp src/package/arch.cpp src/package/dependencies.cpp src/db/read.cpp src/essential/dialog.cpp src/db/init.cpp src/package/copyByList.cpp src/db/add.cpp src/package/remove.cpp src/db/remove.cpp src/package/list.cpp src/main.cpp
+CMLIBS      = -larchive -llzma
+CXXSOURCES  = 
 CSOURCES    =
 CXXOBJ      = $(CXXSOURCES:.cpp=.o)
 COBJ        = $(CSOURCES:.c=.o)

@@ -1,8 +1,10 @@
 #ifndef PAKO_EXEC_H
 #define PAKO_EXEC_H
 
-#include <string>
+#include <filesystem>
 
-int execScript(std::string installScript, int mode);
+#include "package.h"
+
+int execScript(std::filesystem::path installScriptPath, enum execMode mode);
 
 #endif

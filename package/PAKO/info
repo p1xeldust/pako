@@ -1,7 +1,0 @@
-name flag
-version 0.1
-arch x86_64
-type 0
-dependencies dep1 dep2
-conflicts conf1
-description "Just an example!"

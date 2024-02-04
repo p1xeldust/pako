@@ -1,92 +1,78 @@
-#include <iostream>
+
+#include <fstream>
+#include <sstream>
 #include <string>
 
-#include <sqlite3.h> // Beloved SQLite3
-
 #include "../package/package.h"
-#include "../package/parse.h"
-#include "../essential/o.h"
-
+#include "../common/config.h"
 #include "database.h"
 
-extern Database db;
-extern Output output;
-
-using std::string;
-
-int Database::isIn(string packageName)
+Package Database::GetPackage(std::string packageName)
 {
-    sqlite3* db;
-    sqlite3_stmt* stmt;
+    Package package;
+    std::ifstream dbFile(configParams.dbPath);
 
-    if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK)
+    for (std::string line; std::getline(dbFile, line);)
     {
-        output.error("read.cpp:isInDB: Cant open database: " + (string)sqlite3_errmsg(db));
-        exit(EXIT_FAILURE);
+        std::stringstream ss(line);
+        std::string type, value;
+        ss >> type;
+        ss >> value;
+        if (type == "name" && value == packageName)
+        {
+            package.name = value;
+            break;
+        }
+        else if (dbFile.eof())
+        {
+            return package;
+        }
     }
-
-    if (sqlite3_prepare_v2(db, "SELECT * FROM packages WHERE name = ?;", -1, &stmt, 0) != SQLITE_OK)
+    for (std::string line; std::getline(dbFile, line);)
     {
-        output.error("read.cpp:isInDB: Cant open database: " + (string)sqlite3_errmsg(db));
-        sqlite3_close(db);
-        exit(EXIT_FAILURE);
-    }
+        if (line == "EOPE")
+            break;
+        std::stringstream ss(line);
+        std::string type, value;
+        ss >> type;
+        std::getline(ss >> std::ws, value);
 
-    sqlite3_bind_text(stmt, 1, packageName.c_str(), -1, SQLITE_STATIC);
-
-    int result = sqlite3_step(stmt);
-    if (result == SQLITE_ROW)
-    {
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        return 1;
+        if (type == "version" && !value.empty())
+            package.version = value;
+        else if (type == "arch" && !value.empty())
+            package.arch.name = value;
+        else if (type == "type" && !value.empty())
+            package.meta = static_cast<packageMetaType>(stoi(value));
+        else if (type == "dependencies" && !value.empty())
+        {
+            std::stringstream dependencies(value);
+            for (std::string dependency; dependencies >> dependency;)
+                package.dependencies.push_back(dependency);
+        }
+        else if (type == "conflicts" && !value.empty())
+        {
+            std::stringstream conflicts(value);
+            for (std::string conflict; conflicts >> conflict;)
+                package.conflicts.push_back(conflict);
+        }
+        else if (type == "description" && !value.empty())
+            package.description = value;
+        else if (type == "listfile" && !value.empty())
+            package.files.listFilePath = value;
+        else if (type == "scriptfile" && !value.empty())
+            package.files.scriptFilePath = value;
+        else
+            continue;
     }
-
-    if (result != SQLITE_DONE)
-    {
-        output.error("read.cpp:isInDB: Cant open database: " + (string)sqlite3_errmsg(db));
-        sqlite3_close(db);
-        exit(1);
-    }
-    sqlite3_finalize(stmt);
-    sqlite3_close(db);
-    return 0;
+    dbFile.close();
+    return package;
 }
 
-int Database::getData(string packageName, Package& package)
+bool Database::IsIn(std::string packageName)
 {
-    sqlite3* db;
-    sqlite3_stmt* stmt;
-    if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK)
-    {
-        output.error("read.cpp:getData: isInDB: Cant open database: " + (string)sqlite3_errmsg(db));
-        exit(EXIT_FAILURE);
-    }
-
-    if (sqlite3_prepare_v2(db, "SELECT * FROM packages WHERE name = ?;", -1, &stmt, 0) != SQLITE_OK) {
-        output.error("read.cpp:getData: Error selecting package from db. SQLite error: " + (string)sqlite3_errmsg(db));
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        exit(1);
-    }
-
-    sqlite3_bind_text(stmt, 1, packageName.c_str(), -1, SQLITE_STATIC);
-
-    int step_result = sqlite3_step(stmt);
-    if (step_result == SQLITE_ROW) {
-        package.name = (char*)sqlite3_column_text(stmt, 0);
-        package.files.specFile = (char*)sqlite3_column_text(stmt, 1);
-        package.files.listFile = (char*)sqlite3_column_text(stmt, 2);
-        package.files.installScript = (char*)sqlite3_column_text(stmt, 3);
-    }
-    else if (step_result != SQLITE_DONE) {
-        output.error("read.cpp:getData: Error selecting package from db. SQLite error: " + (string)sqlite3_errmsg(db));
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        exit(1);
-    }
-
-    sqlite3_finalize(stmt);
-    sqlite3_close(db);
-    return parseSpecs(package.files.specFile, package);
+    std::ifstream dbFile(configParams.dbPath);
+    for (std::string line; std::getline(dbFile, line);)
+        if (line == "name " + packageName)
+            return true;
+    return false;
 }

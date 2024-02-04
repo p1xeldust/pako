@@ -6,14 +6,8 @@
 
 #include "package.h"
 #include "exec.h"
-
 #include "../db/database.h"
-extern Database db;
-#include "../essential/o.h"
-extern Output output;
-
-
-#include "../pako.h"
+#include "../common/output.h"
 
 using std::string, std::vector, std::ifstream, std::filesystem::read_symlink,
         std::filesystem::path, std::filesystem::copy, 
@@ -21,12 +15,36 @@ using std::string, std::vector, std::ifstream, std::filesystem::read_symlink,
         std::filesystem::is_empty, std::filesystem::is_symlink,
         std::remove, std::filesystem::remove, std::filesystem::exists;
 
-int Pako::remove(vector<string> packages) {
+int checkDepsOnRemove(Package& package) {
+    std::ifstream dbFile(configParams.dbPath);
+    std::string line;
+    
+    while (std::getline(dbFile, line)) {
+        std::istringstream iss(line);
+        std::string word;
+        
+        while (iss >> word) {
+            if (word == "dependencies") {
+                size_t pos = line.find(package.name);
+    
+                if (pos != std::string::npos) {
+                    return -1;
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+int Remove(vector<string> packages) {
     auto it = packages.begin();
 
     while (it != packages.end()) {
         const auto& packageit = *it;
-        if (!db.isIn(packageit)) {
+        if (!db.IsIn(packageit)) {
             output.warn(packageit + " is not installed, skipping.");
             it = packages.erase(it);
         }
@@ -35,40 +53,35 @@ int Pako::remove(vector<string> packages) {
         }
     }
     for(const auto& packageit : packages) {
-        Package package;
-        if(db.getData(packageit, package)== -1) {
-            output.error("Cant get data from database\n");
-            return 1;
-        }
-        if(db.checkDepsOnRemove(package, packages) == -1) {
+        Package package = db.GetPackage(packageit);
+        if(checkDepsOnRemove(package) == -1) {
             output.warn("Ignoring " + package.name);
             continue;
         }
-        if(exists(package.files.installScript))
-            execScript(package.files.installScript, PRE_REMOVE);
-        ifstream listFile(package.files.listFile);
+        if(exists(package.files.scriptFilePath))
+            execScript(package.files.scriptFilePath, PRE_REMOVE);
+        ifstream listFile(package.files.listFilePath);
         for(string line; getline(listFile, line);) {
-            if(is_regular_file((string)PREFIX + "/" + line))
-                std::filesystem::remove((string)PREFIX + "/" + line);
+            if(is_regular_file(configParams.prefixPath / line))
+                std::filesystem::remove(configParams.prefixPath / line);
         }
         listFile.seekg(0, std::ios::beg);
         for(string line; getline(listFile, line);) {
-            if(is_empty((string)PREFIX + "/" + line))
-                std::filesystem::remove((string)PREFIX + "/" + line);
+            if(is_empty(configParams.prefixPath /line))
+                std::filesystem::remove(configParams.prefixPath / line);
         }
         listFile.seekg(0, std::ios::beg);
         for(string line; getline(listFile, line);) {
-            if(is_symlink((string)PREFIX + "/" + line) && !exists(read_symlink((string)PREFIX + "/" + line)))
-                std::filesystem::remove((string)PREFIX + "/" + line);
+            if(is_symlink(configParams.prefixPath / line) && !exists(read_symlink(configParams.prefixPath / line)))
+                std::filesystem::remove(configParams.prefixPath / line);
         }
         listFile.close();
-        std::filesystem::remove(package.files.listFile);
-        std::filesystem::remove(package.files.specFile);
-        if(exists(package.files.installScript)) {
-            execScript(package.files.installScript, POST_REMOVE);
-            std::filesystem::remove(package.files.installScript);
+        std::filesystem::remove(package.files.listFilePath);
+        if(exists(package.files.scriptFilePath)) {
+            execScript(package.files.scriptFilePath, POST_REMOVE);
+            std::filesystem::remove(package.files.scriptFilePath);
         }
-        db.remove(package.name);
+        db.RemovePackage(package);
         output.msg("Removed " + package.name);
     }
     return 0;

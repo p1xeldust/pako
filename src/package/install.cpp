@@ -5,69 +5,60 @@
 #include <string>
 #include <vector>
 
-#include "../essential/o.h"
+#include "../common/output.h"
 #include "../db/database.h"
-#include "copyByList.h"
+#include "../common/copy.h"
+#include "../common/config.h"
+#include "../common/dialog.h"
 #include "package.h"
 #include "exec.h"
 #include "unpack.h"
-#include "clean.h"
+#include "parse.h"
+#include "cleanup.h"
 
-#include "../pako.h"
-
-extern Output output;
-extern Database db;
-
-using std::string, std::cout, std::vector, std::ifstream, 
-        std::filesystem::path, std::filesystem::copy, 
-        std::filesystem::create_directories, std::filesystem::is_regular_file, 
-        std::remove, std::filesystem::exists;
-
-int Pako::install(vector<string> packagesAsFiles) {
-    create_directories((string)VAR_PATH + "/control/");
+int Install(std::vector<std::string> packagesAsFiles)
+{
+    create_directories(configParams.varPath / "control");
     auto it = packagesAsFiles.begin();
-
     while (it != packagesAsFiles.end()) {
-        const auto& packageFile = *it;
-        if (!is_regular_file(packageFile)) {
+        const auto &packageFile = *it;
+        if (!std::filesystem::is_regular_file(packageFile)) {
             output.warn(packageFile + " is an invalid file, skipping");
             it = packagesAsFiles.erase(it);
         }
-        else {
-            ++it;
-        }
+        else ++it;
     }
+    for (const std::string packageFile : packagesAsFiles) {
+        std::filesystem::path tmpPath = configParams.tmpPath / (packageFile + "_tmp");
 
-    for (const auto& packageFile : packagesAsFiles) {
-        string tmpPath = (string)TMP_PATH + "/" + path(packageFile).filename().string() + "_tmp/";
-        Package package;
-
-        if (unpackPackage(packageFile, package, tmpPath) == -1) {
-            output.warn("Can't install " + packageFile + ". Cleaning up and skipping.");
-            cleanUpInstall(path(packageFile).filename().string());
+        if (unpackPackage(packageFile) == -1) {
+            output.warn("Can't install " + packageFile + ". Bad archive");
+            CleanUpInstall((std::filesystem::path)packageFile);
             continue;
         }
-
-        ifstream listFile(tmpPath + "/PAKO/files");
-        if(exists(tmpPath + "/PAKO/install"))
-            execScript(package.files.installScript, PRE_INSTALL);
-        if(package.meta == DEFAULT)
-            copyByList(tmpPath + "/sources", listFile, package);
-        package.files.listFile = (string)VAR_PATH + "/control/" + package.name + ".files";
-        package.files.specFile = (string)VAR_PATH + "/control/" + package.name + ".info";
-        package.files.installScript = (string)VAR_PATH + "/control/" + package.name + ".install";
-        if(exists(tmpPath + "/PAKO/install")) {
-            copy_file(tmpPath + "/PAKO/install", package.files.installScript, std::filesystem::copy_options::update_existing);
-        }
-        db.add(package);
-        copy_file(tmpPath + "/PAKO/info", package.files.specFile, std::filesystem::copy_options::update_existing);
-        if(package.meta == DEFAULT)
-            copy_file(tmpPath + "/PAKO/files", package.files.listFile, std::filesystem::copy_options::update_existing);
-
-        output.msg("Installed " + package.name);
-        execScript(tmpPath + "/PAKO/install", POST_INSTALL);
-        cleanUpInstall(path(packageFile).filename());
     }
-
-    return 1;
+    for (const std::string packageFile : packagesAsFiles) {
+        std::filesystem::path tmpPath = configParams.tmpPath / (packageFile + "_tmp");
+        Package package = ParseSpecs(tmpPath / "PAKO/info");
+        if (package.skipcurrent) {
+            output.warn("Skipping " + packageFile);
+            CleanUpInstall(packageFile);
+            continue;
+        }
+        if(std::filesystem::exists(tmpPath / "PAKO/install")) {
+            package.files.scriptFilePath = configParams.varPath / "control" / (package.name + ".install");
+            execScript(tmpPath / "PAKO/install", PRE_INSTALL);
+            copy_file(tmpPath / "PAKO/install", package.files.scriptFilePath, std::filesystem::copy_options::update_existing);
+        }
+        if(package.meta == PACKAGE_DEFAULT) {
+            package.files.listFilePath = configParams.varPath / "control" / (package.name + ".files");
+            std::ifstream listFile(tmpPath / "PAKO/files");
+            copyByList(tmpPath / "source", listFile, package);
+            copy_file(tmpPath / "PAKO/files", package.files.listFilePath, std::filesystem::copy_options::update_existing);
+        }
+        db.AddPackage(package);
+        CleanUpInstall(packageFile);
+        output.msg("Installed " + package.name);
+    }
+    return 0;
 }
