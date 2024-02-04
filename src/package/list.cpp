@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -22,9 +23,26 @@ int List(vector<string> packages) {
             ++it;
         }
     }
-    for(const auto& packageit : packages) {
-        Package package = db.GetPackage(packageit);
-        cout << package.name << " " << package.version << " " << package.arch.name << " " << package.description << "\n";
+    if(packages.size() > 0) {
+
+        for(const auto& packageit : packages) {
+            Package package = db.GetPackage(packageit);
+            cout << package.name << " " << package.version << " " << package.arch.name << " " << package.description << "\n";
+        }
+        return 0;
+    }
+    std::ifstream dbFile(configParams.dbPath);
+    for(std::string line; std::getline(dbFile, line);) {
+        Package package;
+        std::istringstream iss(line);
+        std::string key;
+        iss >> key;
+
+        if (key == "name") {
+            iss >> package.name;
+            package = db.GetPackage(package.name);
+            cout << package.name << " " << package.version << " " << package.arch.name << " " << package.description << "\n";
+        }
     }
     return 0;
 }

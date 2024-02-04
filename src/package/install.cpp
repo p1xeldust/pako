@@ -33,7 +33,7 @@ int Install(std::vector<std::string> packagesAsFiles)
 
         if (unpackPackage(packageFile) == -1) {
             output.warn("Can't install " + packageFile + ". Bad archive");
-            CleanUpInstall((std::filesystem::path)packageFile);
+            CleanUpInstall(packageFile);
             continue;
         }
     }
@@ -53,12 +53,12 @@ int Install(std::vector<std::string> packagesAsFiles)
         if(package.meta == PACKAGE_DEFAULT) {
             package.files.listFilePath = configParams.varPath / "control" / (package.name + ".files");
             std::ifstream listFile(tmpPath / "PAKO/files");
-            copyByList(tmpPath / "source", listFile, package);
+            copyByList((tmpPath / "sources"), listFile, package);
             copy_file(tmpPath / "PAKO/files", package.files.listFilePath, std::filesystem::copy_options::update_existing);
         }
         db.AddPackage(package);
         CleanUpInstall(packageFile);
-        output.msg("Installed " + package.name);
+        output.msg("Installed " + package.name + " " + package.version + " (" + package.arch.name + ")");
     }
     return 0;
 }

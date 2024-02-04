@@ -55,10 +55,6 @@ Package ParseSpecs(std::filesystem::path specFilePath)
         }
         else if (type == "description" && !value.empty())
             package.description = value;
-        else if (type == "listfile" && !value.empty())
-            package.files.listFilePath = value;
-        else if (type == "scriptfile" && !value.empty())
-            package.files.scriptFilePath = value;
         else
             continue;
     }

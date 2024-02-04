@@ -22,6 +22,7 @@ void Database::AddPackage(Package &package)
     for (std::string conflict : package.conflicts)
         dbFile << " " << conflict;
     dbFile
+        << "\ndescription " << package.description
         << "\nlistfile " << package.files.listFilePath
         << "\nscriptfile " << package.files.scriptFilePath
         << "\nEOPE\n";

@@ -1,8 +1,12 @@
+# Makefile for Pako
+# DESTDIR is supported, 
+# don't forget about it
+
 # Compilation stuff
 CC          = 
-CXX         =
-CXXFLAGS    = -pipe -s -UNDEBUG -fno-ident -feliminate-unused-debug-types -feliminate-unused-debug-symbols -fno-dwarf2-cfi-asm -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-debug-cpp -fno-debug-types-section -gno-record-gcc-switches -gno-column-info -gno-statement-frontiers -gno-variable-location-views -gno-internal-reset-location-views -gno-inline-points -fno-rtti -gno-pubnames -fsplit-paths -fdce -fdse -fallocation-dce -ftree-builtin-call-dce -ftree-dce -ftree-dse -fno-semantic-interposition -fgraphite-identity -floop-nest-optimize -floop-interchange -fno-plt -Ofast -flto -fipa-pta -fdevirtualize-at-ltrans -fwhole-program -fno-exceptions -static
-LDFLAGS     = -Ofast
+CXX         = 
+CXXFLAGS    = -Os -static -no-pie -pipe
+LDFLAGS     = -Ofast -static -no-pie -pipe
 
 
 # Don't touch anything пожалуйста :P
@@ -19,30 +23,35 @@ NOSU        = 0
 endif
 
 VERSION	    = "0.0.2"
-CMCXXFLAGS  = -std=c++17
+CMCXXFLAGS  = -std=c++17 -DVERSION=\""0.0.2\""
 CMLIBS      = -larchive -llzma
-CXXSOURCES  = 
-CSOURCES    =
-CXXOBJ      = $(CXXSOURCES:.cpp=.o)
-COBJ        = $(CSOURCES:.c=.o)
-BIN         = pako
-all: $(COBJ) $(CXXOBJ)
+CXXSRC      = src/common/config.cpp src/common/copy.cpp src/common/dialog.cpp src/common/output.cpp src/common/tar.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/architecture.cpp src/package/check.cpp src/package/cleanup.cpp src/package/dependencies.cpp src/package/exec.cpp src/package/install.cpp src/package/list.cpp src/package/parse.cpp src/package/remove.cpp src/package/specs.cpp src/package/unpack.cpp src/main.cpp
+CSRC		=
+
+CXXOBJ      = $(CXXSRC:.cpp=.o)
+COBJ        = $(CSRC:.c=.o)
+BIN         = src/pako
+
+all: $(CXXOBJ) $(COBJ)
 	@echo "  CXXLD  $(BIN)"
-	@$(CXX) $(CXXFLAGS) $(CXXFLAGS) -o $(BIN) $^ $(CMLIBS)
+	@$(CXX) $(LDFLAGS) -o $(BIN) $^ $(CMLIBS)
 
 %.o: %.c
-	@echo "  CC     $< -> $@"
-	@$(CC) $(CFLAGS) $(CVARIABLES) -c $< -o $@
+	@echo "  CC  $@"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.cpp
-	@echo "  CXX    $< -> $@"
-	@$(CXX) $(CXXFLAGS) $(CXXCMFLAGS) $(CVARIABLES) -c $< -o $@
+	@echo "  CXX  $@"
+	@$(CXX) $(CMCXXFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	@echo "Cleaning up..."
 	@rm -f $(COBJ) $(CXXOBJ) $(BIN)
 
-install: all # Я не изверг, поэтому здесь есть DESTDIR
-	install -d ${DESTDIR}/usr/bin
-	install -m 755 $(BIN) ${DESTDIR}/usr/bin
-	install -m 755 scripts/pako-builder ${DESTDIR}/usr/bin
+install: all
+	@install -d ${DESTDIR}/usr/bin
+	@install -d ${DESTDIR}/etc/pako
+	@echo "  INST  $(BIN) ${DESTDIR}/usr/bin"
+	@install -m 755 $(BIN) ${DESTDIR}/usr/bin
+	@echo "  INST  conf/pako.conf ${DESTDIR}/etc/pako"
+	@install -m 644 conf/pako.conf ${DESTDIR}/etc/pako

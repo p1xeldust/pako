@@ -62,18 +62,21 @@ int Remove(vector<string> packages) {
             execScript(package.files.scriptFilePath, PRE_REMOVE);
         ifstream listFile(package.files.listFilePath);
         for(string line; getline(listFile, line);) {
-            if(is_regular_file(configParams.prefixPath / line))
-                std::filesystem::remove(configParams.prefixPath / line);
+            std::string filePath = configParams.prefixPath.string() + "/" + line;
+            if(is_regular_file(filePath))
+                std::filesystem::remove(filePath);
         }
         listFile.seekg(0, std::ios::beg);
         for(string line; getline(listFile, line);) {
-            if(is_empty(configParams.prefixPath /line))
-                std::filesystem::remove(configParams.prefixPath / line);
+            std::string filePath = configParams.prefixPath.string() + "/" + line;
+            if(is_empty(filePath))
+                std::filesystem::remove(filePath);
         }
         listFile.seekg(0, std::ios::beg);
         for(string line; getline(listFile, line);) {
-            if(is_symlink(configParams.prefixPath / line) && !exists(read_symlink(configParams.prefixPath / line)))
-                std::filesystem::remove(configParams.prefixPath / line);
+            std::string filePath = configParams.prefixPath.string() + "/" + line;
+            if(is_symlink(filePath) && !exists(read_symlink(filePath)))
+                std::filesystem::remove(filePath);
         }
         listFile.close();
         std::filesystem::remove(package.files.listFilePath);
@@ -82,7 +85,7 @@ int Remove(vector<string> packages) {
             std::filesystem::remove(package.files.scriptFilePath);
         }
         db.RemovePackage(package);
-        output.msg("Removed " + package.name);
+        output.msg("Removed " + package.name + " " + package.version + " (" + package.arch.name + ")");
     }
     return 0;
 }
