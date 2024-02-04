@@ -1,22 +1,50 @@
-#include "../db/database.h"
-#include "../output/print.h"
+#ifndef PAKO_PACKAGE_H
+#define PAKO_PACKAGE_H
+#include <string>
+#include <vector>
 
-#ifndef PACKAGE_H
-#define PACKAGE_H
+enum execMode {
+    PRE_INSTALL,
+    POST_INSTALL,
+    PRE_REMOVE,
+    POST_REMOVE,
+    RECONFIGURE
+};
 
-#ifdef __cplusplus
+enum packageMetaType {
+    PACKAGE_DEFAULT, 
+    PACKAGE_META,
+    PACKAGE_RIDICULOUS
+};
 
-#include <filesystem>
+enum architectureMetaType {
+    ARCH_NATIVE,
+    ARCH_FOREIGN,
+    ARCH_NONE
+};
 
-bool make_tmp(std::string path);
-bool clear_tmp();
-bool unpack_package_archive(std::string source, std::string destination);
-bool read_package_data(std::string dataFilePath, std::string package_data[3]);
-bool check_dependencies(std::string data_file_path);
-bool check_conflicts(std::string data_file_path);
-bool check_architecture(std::string package_arch);
-void remove_package_source(std::string list_file_path);
-bool solve_dependencies(std::string package_name);
-#endif
+class Package {
+    private:
+        struct architectureType {
+            std::string name;
+            enum architectureMetaType meta;
+        };
+
+        struct packageFiles {
+            std::string scriptFilePath = "";
+            std::string listFilePath = "";
+        };
+
+    public:
+        bool skipcurrent = 0;
+        std::string name;
+        std::string version;
+        enum packageMetaType meta;
+        architectureType arch;
+        std::vector<std::string> dependencies;
+        std::vector<std::string> conflicts;
+        std::string description;
+        packageFiles files;
+};
 
 #endif

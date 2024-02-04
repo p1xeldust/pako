@@ -1,11 +1,21 @@
 if [ "$1" = "--preinst" ]; then
-    #Put your pre-installation script here!
+    # Скрипт, выполняемый перед установкой пакета
     echo "Preinstallation script executed correctly"
     exit 1;
 fi
-
 if [ "$1" = "--postinst" ]; then
-    #Put your post-installation script here!
-    echo "Postinstallation script executed correctly"
+    # Скрипт, выполняемый после установки пакета
+    echo "Post Installation script executed correctly"
+    exit 1;
+fi
+
+if [ "$1" = "--preremove" ]; then
+    # Скрипт, выполняемый после удаления пакета
+    echo "Post Installation script executed correctly"
+    exit 1;
+fi
+if [ "$1" = "--postremove" ]; then
+    # Скрипт, выполняемый после удаления пакета
+    echo "Post Installation script executed correctly"
     exit 1;
 fi

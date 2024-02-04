@@ -5,16 +5,13 @@ Another package manager!
 [![Makefile CI](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml/badge.svg?branch=main)](https://github.com/toastmakingmachine/pako/actions/workflows/makefile.yml)  
 
 :warning: STILL IN DEVELOPMENT :warning:
-Currently only these architectures supported:  
-**x86_64**, **i386**, **aarch64**, **arm**, **ppc**, **ppc64**, **mips**, **mipsel**
-
 
 ## Installation:
-For this you need a **c++ compiler compatible with c++17**, **libarchive**, **liblzma**, and **make**
+For this you need **a c++ compiler compatible with c++17**, **libarchive**, **liblzma** and **make**
 
 Debian-like distributions:
 ```
-apt install git g++ make libarchive-dev liblzma-dev
+apt install git clang make libarchive-dev liblzma-dev
 ```
 Once you've installed your compiler properly, clone this repository:
 ```
@@ -33,8 +30,7 @@ Either you can link Pako statically by using
 CXXFLAGS="-static"
 ```
  
-You can use ``-j`` flag to specify the  amount of cores to use while compilation. Either you can use all of them:
+You can use ``-j`` flag to specify the amount of cores to use while compilation. Either you can use all of them:
 ```
  make -j{nproc}
 ```
-

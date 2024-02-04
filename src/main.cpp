@@ -1,46 +1,35 @@
-#include <iostream>
-#include <vector>
-#include <exception>
-#include <filesystem>
-#include <algorithm>
+#include "common/dialog.h"
+#include "common/config.h"
+#include "common/output.h"
+#include "db/database.h"
 
-#include "pako.hpp"
+#include "package/main.h"
 
-std::vector<std::string> arguments;
+Dialog dialog;
+Output output;
+Database db;
 
-int main(int argc, char* argv[]) {
-    try {
-        if(!std::filesystem::is_directory((std::string)VAR_PATH + "/control/"))
-            std::filesystem::create_directories((std::string)VAR_PATH + "/control/");
-        if(!std::filesystem::is_regular_file((std::string)VAR_PATH + "/packages.db"))
-            initDatabase();
-    } catch (const std::exception& e) {
-        errormsg("Can't init database, try running pako as superuser.\n");
-        debugmsg("initialSetup: %s\n",e.what());
+
+int main(int argc, char** argv) {
+    configParams.ReadConfigFile("/etc/pako/pako.conf");
+    std::vector<std::string> arguments;
+    if(argc < 2) {
+        Help();
+        return 1;
     }
-    for(int i=1; i<argc; i++)
-        arguments.push_back(std::move(argv[i]));
-    if(std::find(arguments.begin(), arguments.end(), "-h") != arguments.end() || arguments.size() < 1) {
-        help();
-        return 0;
+    std::string action = argv[1];
+
+    for(int i = 2; i<argc; i++) {
+        arguments.push_back(argv[i]);
     }
-    else if(std::find(arguments.begin(), arguments.end(), "-i") != arguments.end()) {
-        arguments.erase(std::find(arguments.begin(), arguments.end(), "-i"));
-        return(installPackage(arguments));
-    }
-    else if(std::find(arguments.begin(), arguments.end(), "-r") != arguments.end()) {
-        arguments.erase(std::find(arguments.begin(), arguments.end(), "-r"));
-        return(removePackage(arguments));
-    }
-    else if(std::find(arguments.begin(), arguments.end(), "-l") != arguments.end()) {
-        arguments.erase(std::find(arguments.begin(), arguments.end(), "-l"));
-        return(listPackages(arguments));
-    }
-    else if(std::find(arguments.begin(), arguments.end(), "-v") != arguments.end()) {
-        version();
-        return 0;
-    } else {
-        errormsg("Unknown action '%s'. Use -h for help.",  arguments[0].c_str());
-    }
-    return 0;
+    if(action == "-i")
+        Install(arguments);
+    else if(action == "-l")
+        List(arguments);
+    else if(action == "-r")
+        Remove(arguments);
+    else if(action == "-v")
+        Version();
+    else
+        Help();
 }

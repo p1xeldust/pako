@@ -1,66 +1,57 @@
-# User variables
-PREFIX      = /opt
-VAR_PATH    =      # On prefix
-TMP_PATH    =      # On prefix
+# Makefile for Pako
+# DESTDIR is supported, 
+# don't forget about it
 
-CC          = gcc
-CXX         = g++
-CFLAGS      = -Ofast -DDEBUG
-CXXFLAGS    = -O3 -DDEBUG
-LDFLAGS     = -Ofast
+# Compilation stuff
+CC          = 
+CXX         = 
+CXXFLAGS    = -Os -static -no-pie -pipe
+LDFLAGS     = -Ofast -static -no-pie -pipe
 
 
 # Don't touch anything пожалуйста :P
 
 # Setting default variables if some of them are undefined
-ifeq ($(PREFIX),)
-PREFIX      = /opt
-endif
-ifeq ($(VAR_PATH),)
-VAR_PATH    = /var/lib/pako
-endif
-ifeq ($(TMP_PATH),)
-TMP_PATH    = /tmp/pako
-endif
-ifeq ($(DEMO),)
-DEMO  = 0
-endif
 ifeq ($(CC),)
-CC          = gcc
+CC          = cc
 endif
 ifeq ($(CXX),)
-CXX         = g++
+CXX         = c++
 endif
 ifneq ($(NOSU),1)
 NOSU        = 0
 endif
 
-VERSION	    = "dev"
-CMCXXFLAGS  = -std=c++17
-CVARIABLES  = -DPREFIX=\"$(PREFIX)/\" -DVAR_PATH=\"$(PREFIX)/$(VAR_PATH)/\" -DTMP_PATH=\"$(PREFIX)/$(TMP_PATH)/\" -DVERSION=\"$(VERSION)\" -DDEMO=$(DEMO) -DNOSU=$(NOSU)
-CMLIBS      = -larchive -llzma -lsqlite3
-CXXSOURCES  = src/install.cpp src/list.cpp src/main.cpp src/output/version.cpp src/output/help.cpp src/output/print.cpp src/remove.cpp src/db/init.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/solver.cpp src/package/checks.cpp src/package/unpack.cpp src/package/temp.cpp src/package/read.cpp
-CSOURCES    =
-CXXOBJ      = $(CXXSOURCES:.cpp=.o)
-COBJ        = $(CSOURCES:.c=.o)
-BIN         = pako
-all: $(COBJ) $(CXXOBJ)
+VERSION	    = "0.0.2"
+CMCXXFLAGS  = -std=c++17 -DVERSION=\""0.0.2\""
+CMLIBS      = -larchive -llzma
+CXXSRC      = src/common/config.cpp src/common/copy.cpp src/common/dialog.cpp src/common/output.cpp src/common/tar.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/architecture.cpp src/package/check.cpp src/package/cleanup.cpp src/package/dependencies.cpp src/package/exec.cpp src/package/install.cpp src/package/list.cpp src/package/parse.cpp src/package/remove.cpp src/package/specs.cpp src/package/unpack.cpp src/main.cpp
+CSRC		=
+
+CXXOBJ      = $(CXXSRC:.cpp=.o)
+COBJ        = $(CSRC:.c=.o)
+BIN         = src/pako
+
+all: $(CXXOBJ) $(COBJ)
 	@echo "  CXXLD  $(BIN)"
-	@$(CXX) $(CXXFLAGS) $(CXXFLAGS) -o $(BIN) $^ $(CMLIBS)
+	@$(CXX) $(LDFLAGS) -o $(BIN) $^ $(CMLIBS)
 
 %.o: %.c
-	@echo "  CC     $< -> $@"
-	@$(CC) $(CFLAGS) $(CVARIABLES) -c $< -o $@
+	@echo "  CC  $@"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.cpp
-	@echo "  CXX    $< -> $@"
-	@$(CXX) $(CXXFLAGS) $(CXXCMFLAGS) $(CVARIABLES) -c $< -o $@
+	@echo "  CXX  $@"
+	@$(CXX) $(CMCXXFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	@echo "Cleaning up..."
 	@rm -f $(COBJ) $(CXXOBJ) $(BIN)
 
-install: all # Я не изверг, поэтому здесь есть DESTDIR
-	install -d ${DESTDIR}/usr/bin
-	install -m 755 $(BIN) ${DESTDIR}/usr/bin
-	install -m 755 scripts/pako-builder ${DESTDIR}/usr/bin
+install: all
+	@install -d ${DESTDIR}/usr/bin
+	@install -d ${DESTDIR}/etc/pako
+	@echo "  INST  $(BIN) ${DESTDIR}/usr/bin"
+	@install -m 755 $(BIN) ${DESTDIR}/usr/bin
+	@echo "  INST  conf/pako.conf ${DESTDIR}/etc/pako"
+	@install -m 644 conf/pako.conf ${DESTDIR}/etc/pako
