@@ -14,7 +14,7 @@ void ConfigParams::ReadConfigFile(const std::string& filePath) {
 
     /* Если файла нет или ошибка, используем предустановленные значения из config.h */
     if (!configFile.good()) {
-        output.error("Can't open config file, exiting.");
+        output.error("Can't open config file.");
         exit(EXIT_FAILURE);
     }
 

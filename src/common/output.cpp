@@ -24,7 +24,7 @@ void Version() {
 }
 
 void Help() {
-    std::cout << "pako " << VERSION << "\n"
+    std::cout << "\npako " << VERSION << "\n"
               << "Usage: pako <option> [arguments]\n"
               << "    -i    install packages\n"
               << "    -r    remove packages\n"

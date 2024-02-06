@@ -32,7 +32,7 @@ int Install(std::vector<std::string> packagesAsFiles)
         std::filesystem::path tmpPath = configParams.tmpPath / (packageFile + "_tmp");
 
         if (unpackPackage(packageFile) == -1) {
-            output.warn("Can't install " + packageFile + ". Bad archive");
+            output.warn("Can't install " + packageFile + ": bad package");
             CleanUpInstall(packageFile);
             continue;
         }

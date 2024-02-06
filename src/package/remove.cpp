@@ -45,7 +45,7 @@ int Remove(vector<string> packages) {
     while (it != packages.end()) {
         const auto& packageit = *it;
         if (!db.IsIn(packageit)) {
-            output.warn(packageit + " is not installed, skipping.");
+            output.warn(packageit + " is not installed.");
             it = packages.erase(it);
         }
         else {
@@ -54,10 +54,9 @@ int Remove(vector<string> packages) {
     }
     for(const auto& packageit : packages) {
         Package package = db.GetPackage(packageit);
-        if(checkDepsOnRemove(package) == -1) {
-            output.warn("Ignoring " + package.name);
+        if(checkDepsOnRemove(package) == -1)
             continue;
-        }
+
         if(exists(package.files.scriptFilePath))
             execScript(package.files.scriptFilePath, PRE_REMOVE);
         ifstream listFile(package.files.listFilePath);
