@@ -72,7 +72,6 @@ createPackageArchive() {
 cleanUp() {
     mkdir package
     mv PAKO sources package
-    mv package/sources/* .
 }
 
 createSources
