@@ -75,7 +75,7 @@ Package CheckDependencies(Package &package)
     {
         if (!db.IsIn(dependency) && !isInTmp(dependency))
         {
-            output.error("Package '" + dependency + "' is required for " + package.name + ". Install it first.");
+            output.error("Package '" + dependency + "' is required for " + package.name + ".");
             package.skipcurrent = 1;
         }
     }

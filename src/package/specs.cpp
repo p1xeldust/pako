@@ -4,20 +4,20 @@
 #include "package.h"
 
 Package checkSpecs(class Package& package) {
-    if (!package.name.length()) {
-        output.error("specs_check.cpp: Incorrect package name, skipping.");
+    if (!package.name.empty()) {
+        output.error("specs.cpp: Incorrect package name.");
         package.skipcurrent = 1;
         return package;
     }
 
-    if (!package.version.length()) {
-        output.error("specs_check.cpp: Incorrect version, skipping.");
+    if (package.version.empty()) {
+        output.error("specs.cpp: Incorrect version.");
         package.skipcurrent = 1;
         return package;
     }
 
-    if (!package.arch.name.length()) {
-        output.error("specs_check.cpp: Incorrect arch, skipping.");
+    if (!package.arch.name.empty()) {
+        output.error("specs_check.cpp: Incorrect arch.");
         package.skipcurrent = 1;
         return package;
     }
