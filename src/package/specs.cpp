@@ -4,7 +4,7 @@
 #include "package.h"
 
 Package checkSpecs(class Package& package) {
-    if (!package.name.empty()) {
+    if (package.name.empty()) {
         output.error("specs.cpp: Incorrect package name.");
         package.skipcurrent = 1;
         return package;
@@ -16,7 +16,7 @@ Package checkSpecs(class Package& package) {
         return package;
     }
 
-    if (!package.arch.name.empty()) {
+    if (package.arch.name.empty()) {
         output.error("specs_check.cpp: Incorrect arch.");
         package.skipcurrent = 1;
         return package;
