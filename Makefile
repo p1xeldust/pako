@@ -5,7 +5,7 @@
 CC          = 
 CXX         = 
 CXXFLAGS    = -Os -no-pie -pipe
-LDFLAGS     = -Ofast -no-pie -pipe
+LDFLAGS     = -O3 -no-pie -pipe
 
 
 # Don't touch anything пожалуйста :P
