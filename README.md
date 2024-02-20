@@ -23,6 +23,9 @@ Then move to pako folder:
 Compile pako with make:  
 `make`
   
+If you don't need su check on main functions:
+`NOSU=1 make`
+  
 You can also compile it static:  
 `CXXFLAGS="-static" make`
   

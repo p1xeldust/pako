@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../common/output.h"
+#include "../common/root.h"
 #include "../db/database.h"
 #include "../common/copy.h"
 #include "../common/config.h"
@@ -28,6 +29,7 @@ int Install(std::vector<std::string> packagesAsFiles)
         }
         else ++it;
     }
+    CheckRoot();
     for (const std::string packageFile : packagesAsFiles) {
         std::filesystem::path tmpPath = configParams.tmpPath / (packageFile + "_tmp");
 

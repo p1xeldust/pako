@@ -4,10 +4,11 @@
 #include <vector>
 #include <string>
 
+#include "../common/output.h"
+#include "../common/root.h"
+#include "../db/database.h"
 #include "package.h"
 #include "exec.h"
-#include "../db/database.h"
-#include "../common/output.h"
 
 using std::string, std::vector, std::ifstream, std::filesystem::read_symlink,
         std::filesystem::path, std::filesystem::copy, 
@@ -52,6 +53,7 @@ int Remove(vector<string> packages) {
             ++it;
         }
     }
+    CheckRoot();
     for(const auto& packageit : packages) {
         Package package = db.GetPackage(packageit);
         if(checkDepsOnRemove(package) == -1)

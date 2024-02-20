@@ -24,7 +24,7 @@ endif
 VERSION	    = "0.0.2"
 CMCXXFLAGS  = -std=c++17 -DVERSION=\""0.0.2\""
 CMLIBS      = -larchive -llzma
-CXXSRC      = src/common/config.cpp src/common/copy.cpp src/common/dialog.cpp src/common/output.cpp src/common/tar.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/architecture.cpp src/package/check.cpp src/package/cleanup.cpp src/package/dependencies.cpp src/package/exec.cpp src/package/install.cpp src/package/list.cpp src/package/parse.cpp src/package/remove.cpp src/package/specs.cpp src/package/unpack.cpp src/main.cpp
+CXXSRC      = src/common/config.cpp src/common/copy.cpp src/common/dialog.cpp src/common/output.cpp src/common/root.cpp src/common/tar.cpp src/db/add.cpp src/db/read.cpp src/db/remove.cpp src/package/architecture.cpp src/package/check.cpp src/package/cleanup.cpp src/package/dependencies.cpp src/package/exec.cpp src/package/install.cpp src/package/list.cpp src/package/parse.cpp src/package/remove.cpp src/package/specs.cpp src/package/unpack.cpp src/main.cpp
 CSRC	    =
 
 CXXOBJ      = $(CXXSRC:.cpp=.o)
@@ -38,11 +38,11 @@ all: $(CXXOBJ) $(COBJ)
 
 %.o: %.c
 	@echo "  CC     $@"
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -DNOSU=$(NOSU) -c $< -o $@
 
 %.o: %.cpp
 	@echo "  CXX    $@"
-	@$(CXX) $(CMCXXFLAGS) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CMCXXFLAGS) $(CXXFLAGS) -DNOSU=$(NOSU) -c $< -o $@
 
 clean:
 	@echo "Cleaning up..."
