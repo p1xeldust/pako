@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../common/output.h"
+#include "../common/root.h"
 #include "../db/database.h"
 #include "../common/copy.h"
 #include "../common/config.h"
@@ -28,11 +29,12 @@ int Install(std::vector<std::string> packagesAsFiles)
         }
         else ++it;
     }
+    CheckRoot();
     for (const std::string packageFile : packagesAsFiles) {
         std::filesystem::path tmpPath = configParams.tmpPath / (packageFile + "_tmp");
 
         if (unpackPackage(packageFile) == -1) {
-            output.warn("Can't install " + packageFile + ". Bad archive");
+            output.warn("Can't install " + packageFile + ": bad package");
             CleanUpInstall(packageFile);
             continue;
         }

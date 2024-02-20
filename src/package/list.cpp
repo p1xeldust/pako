@@ -16,7 +16,7 @@ int List(vector<string> packages) {
         const auto& packageit = *it;
 
         if (!db.IsIn(packageit)) {
-            output.warn(packageit + " is not installed, skipping.");
+            output.warn(packageit + " is not installed.");
             it = packages.erase(it);
         }
         else {

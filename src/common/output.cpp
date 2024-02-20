@@ -1,12 +1,14 @@
 #include <iostream>
 #include "output.h"
 
+
+
 void Output::msg(const char* message) {
     std::cout << message << "\033[0m\n";
 }
 
 void Output::error(const char* message) {
-    std::cout << "[\033[1;31mError\033[0m] " << message << "\033[0m\n";
+    std::cout << "\x1b[91m\x1b[1merror:\033[0m " << message << "\033[0m\n";
 }
 
 /*
@@ -16,7 +18,7 @@ void Output::debug(const char* message) {
 */
 
 void Output::warn(const char* message) {
-    std::cout << "[\033[1;33mWarn\033[0m] " << message << "\033[0m\n";
+    std::cout << "\x1b[93m\x1b[1mwarn:\033[0m " << message << "\033[0m\n";
 }
 
 void Version() {
@@ -24,7 +26,7 @@ void Version() {
 }
 
 void Help() {
-    std::cout << "pako " << VERSION << "\n"
+    std::cout << "\npako " << VERSION << "\n"
               << "Usage: pako <option> [arguments]\n"
               << "    -i    install packages\n"
               << "    -r    remove packages\n"

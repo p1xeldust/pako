@@ -10,22 +10,20 @@ void Dialog::header()
 
 bool Dialog::SolveArchitecture(Package &currentPackage, const char *hostArchitecture)
 {
-    output.warn("dialog.cpp: Dialog triggered");
-    std::string answer;
-
+    char answer;
     for (;;)
     {
         header();
         std::cout
-            << "Current package " << currentPackage.name << " is supposed for " << currentPackage.arch.name << "\n"
+            << currentPackage.name << " is for " << currentPackage.arch.name << "\n"
             << "Your system is " << hostArchitecture << "\n"
-            << "  Y - install package\n"
-            << "  N - skip package\n\n"
-            << "[Y/y][N/n] > ";
-        std::getline(std::cin, answer);
-        if (answer[0] == 'Y' || answer[0] == 'y')
+            << "  I - Install\n"
+            << "  S - Skip\n\n"
+            << "[Y/y][S/s] > ";
+        std::cin >> answer;
+        if (answer == 'Y' || answer == 'y')
             return false;
-        else if (answer[0] == 'N' || answer[0] == 'n')
+        else if (answer == 'S' || answer == 's')
             return true;
         else
             continue;
@@ -35,23 +33,19 @@ bool Dialog::SolveArchitecture(Package &currentPackage, const char *hostArchitec
 
 bool Dialog::solveCopy(Package &currentPackage, const char *oldFilePath)
 {
-    output.warn("dialog.cpp: Dialog triggered");
-    std::string answer;
-
+    char answer;
     for (;;)
     {
         header();
         std::cout
-            << "File: " << oldFilePath << "\n"
-            << "This file already exists but also provided by package '" << currentPackage.name << "'\n"
-            << "What do you want to do?\n"
-            << "  I - install newer version of file\n"
-            << "  K - keep current version\n"
+            << "File: " << oldFilePath << " already exists but also provided by '" << currentPackage.name << "'\n"
+            << "  I - install newer file\n"
+            << "  K - keep current file\n"
             << "[I/i][K/k] > ";
-        std::getline(std::cin, answer);
-        if (answer[0] == 'I' || answer[0] == 'i')
+        std::cin >> answer;
+        if (answer == 'I' || answer == 'i')
             break;
-        else if (answer[0] == 'K' || answer[0] == 'k')
+        else if (answer == 'K' || answer == 'k')
             return true;
         else
             continue;

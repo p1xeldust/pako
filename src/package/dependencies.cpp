@@ -9,50 +9,58 @@
 
 #include "dependencies.h"
 
-int isInTmp(std::string PackageName) {
-    for (const std::filesystem::directory_entry tmpDir : std::filesystem::directory_iterator(configParams.tmpPath)) {
+int isInTmp(std::string PackageName)
+{
+    for (const std::filesystem::directory_entry tmpDir : std::filesystem::directory_iterator(configParams.tmpPath))
+    {
         std::ifstream specFile(tmpDir.path() / "PAKO/info");
         std::string line;
         std::getline(specFile, line);
-        if(line == "name " + PackageName)
+        if (line == "name " + PackageName)
             return 1;
     }
     return 0;
 }
 
-Package CheckConflicts(Package& package) {
+Package CheckConflicts(Package &package)
+{
     bool hasConflict = false;
 
-    for (const std::string& conflict : package.conflicts) {
-        if (db.IsIn(conflict) || isInTmp(conflict)) {
+    for (const std::string &conflict : package.conflicts)
+    {
+        if (db.IsIn(conflict) || isInTmp(conflict))
+        {
             output.error("Package '" + conflict + "' conflicts with " + package.name + ".");
             package.skipcurrent = 1;
             hasConflict = true;
         }
     }
 
-    if (!hasConflict) {
-        std::ifstream dbFile(configParams.dbPath);
-        std::string conflict;
+    std::ifstream dbFile(configParams.dbPath);
+    std::string conflict;
 
-        for (std::string line; std::getline(dbFile, line);) {
-            std::istringstream iss(line);
-            std::string word;
+    for (std::string line; std::getline(dbFile, line);)
+    {
+        std::istringstream iss(line);
+        std::string word;
 
-            while (iss >> word) {
-                if (word.substr(0, word.find_last_of(" ")) == "name") {
-                    conflict = word.substr(word.find_last_of(" ") + 1);
-                    continue;
-                }
+        while (iss >> word)
+        {
+            if (word.substr(0, word.find_last_of(" ")) == "name")
+            {
+                conflict = word.substr(word.find_last_of(" ") + 1);
+                continue;
+            }
 
-                if (word == "conflicts") {
-                    size_t pos = line.find(package.name);
+            if (word == "conflicts")
+            {
+                size_t pos = line.find(package.name);
 
-                    if (pos != std::string::npos) {
-                        output.error("Package '" + conflict + "' conflicts with " + package.name + ".");
-                        package.skipcurrent = 1;
-                        hasConflict = true;
-                    }
+                if (pos != std::string::npos)
+                {
+                    output.error("Package '" + conflict + "' conflicts with " + package.name + ".");
+                    package.skipcurrent = 1;
+                    hasConflict = true;
                 }
             }
         }
@@ -61,10 +69,13 @@ Package CheckConflicts(Package& package) {
     return package;
 }
 
-Package CheckDependencies(Package& package) {
-    for (std::string dependency : package.dependencies) {
-        if (!db.IsIn(dependency) && !isInTmp(dependency)) {
-            output.error("Package '" + dependency + "' is required for " + package.name + ". Install it first.");
+Package CheckDependencies(Package &package)
+{
+    for (std::string dependency : package.dependencies)
+    {
+        if (!db.IsIn(dependency) && !isInTmp(dependency))
+        {
+            output.error("Package '" + dependency + "' is required for " + package.name + ".");
             package.skipcurrent = 1;
         }
     }

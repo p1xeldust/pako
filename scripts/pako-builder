@@ -1,0 +1,80 @@
+#!/bin/bash
+
+createSources() {
+    if [ -e sources ]; then rm sources -r; fi
+    mkdir sources && mv * sources;
+}
+
+makeControlFiles() {
+cat >> PAKO/info << EOF
+name 
+version 
+arch $(uname -m 2>/dev/null)
+type 0
+dependencies 
+conflicts 
+description ""
+EOF
+read -p "Press enter to edit control file "
+if [ $EDITOR"x" != "x" ]; then
+    $EDITOR PAKO/info
+else
+    nano PAKO/info
+fi
+
+cd sources
+find . > ../PAKO/files
+cd ..
+}
+
+makeInstallScript() {
+cat >> PAKO/install << EOF
+if [ "$1" = "--preinst" ]; then
+    # Script that executed before installation
+
+    exit 1;
+fi
+if [ "$1" = "--postinst" ]; then
+    # Script that executed after installation
+
+    exit 1;
+fi
+
+if [ "$1" = "--preremove" ]; then
+    # Script that executed before package removed
+
+    exit 1;
+fi
+if [ "$1" = "--postremove" ]; then
+    # Script that executed after package removed
+
+    exit 1;
+fi
+EOF
+read -p "Press enter to edit install script "
+if [ $EDITOR"x" != "x" ]; then
+    $EDITOR PAKO/install
+else
+    nano PAKO/install
+fi
+}
+
+createControl() {
+    mkdir PAKO
+    makeControlFiles
+    makeInstallScript
+}
+
+createPackageArchive() {
+    tar cJvf $(grep "name " PAKO/info |awk '{print $2;}')_$(grep "version " PAKO/info | awk '{print $2;}')_$(grep "arch " PAKO/info |awk '{print $2;}').pako PAKO sources
+}
+
+cleanUp() {
+    mkdir package
+    mv PAKO sources package
+}
+
+createSources
+createControl
+createPackageArchive
+cleanUp

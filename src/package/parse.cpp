@@ -23,7 +23,7 @@ Package ParseSpecs(std::filesystem::path specFilePath)
 
     if (!specFile)
     {
-        output.error("parse.cpp: spec file not found, skipping.");
+        output.error("parse.cpp: Spec file not found.");
         package.skipcurrent = 1;
         return package;
     }
