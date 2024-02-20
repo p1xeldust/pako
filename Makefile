@@ -37,11 +37,11 @@ all: $(CXXOBJ) $(COBJ)
 	@$(CXX) $(LDFLAGS) -o $(BIN) $^ $(CMLIBS)
 
 %.o: %.c
-	@echo "  CC  $@"
+	@echo "  CC     $@"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.cpp
-	@echo "  CXX  $@"
+	@echo "  CXX    $@"
 	@$(CXX) $(CMCXXFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
@@ -51,9 +51,9 @@ clean:
 install: all
 	@install -d ${DESTDIR}/usr/bin
 	@install -d ${DESTDIR}/etc/pako
-	@echo "  INST  $(BIN) ${DESTDIR}/usr/bin"
+	@echo "  INST   $(BIN) ${DESTDIR}/usr/bin"
 	@install -m 755 $(BIN) ${DESTDIR}/usr/bin
-	@echo "  INST  $(BIN) ${DESTDIR}/usr/bin"
+	@echo "  INST   $(BIN) ${DESTDIR}/usr/bin"
 	@install -m 755 $(BUILDER) ${DESTDIR}/usr/bin
-	@echo "  INST  conf/pako.conf ${DESTDIR}/etc/pako"
+	@echo "  INST   conf/pako.conf ${DESTDIR}/etc/pako"
 	@install -m 644 conf/pako.conf ${DESTDIR}/etc/pako
